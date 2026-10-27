@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FDR registry · Nidhi Kavach</title>
+  <meta name="description" content="Registry of every security-deposit FDR on the portal, with natural-language search, filters and CSV export">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <script src="../assets/js/config.js"></script>
+  <style>
+    /* page layout only - colours come from theme tokens */
+    .reg-search { margin-bottom: 18px; }
+    .reg-search .card-body { padding: 20px 22px; }
+    .reg-eyebrow { display: flex; align-items: center; gap: 8px; font-size: .78rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--nk-primary-700); margin-bottom: 10px; }
+    .reg-eyebrow .tag-new { text-transform: none; letter-spacing: 0; }
+    .reg-search .smart-search { padding-top: 8px; padding-bottom: 8px; }
+    .reg-search .smart-search input { font-size: 1.02rem; padding: 6px 0; }
+    .reg-try { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+    .reg-try .lbl { font-size: .82rem; color: var(--nk-muted); margin-right: 2px; }
+    .reg-try button.chip { cursor: pointer; font: inherit; font-size: .8rem; background: var(--nk-surface); border-color: var(--nk-border-strong); color: var(--nk-text-2); }
+    .reg-try button.chip:hover, .reg-try button.chip:focus-visible { background: var(--nk-primary-50); border-color: var(--nk-primary); color: var(--nk-primary-700); }
+    .reg-how { display: flex; gap: 8px; align-items: flex-start; margin-top: 14px; font-size: .8rem; color: var(--nk-muted); }
+    .reg-how svg { flex: none; margin-top: 1px; }
+    .reg-active { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--nk-border); }
+    .reg-active .lbl { font-size: .82rem; font-weight: 600; color: var(--nk-text-2); }
+    .reg-active .chip { font-size: .82rem; padding: 4px 10px; }
+    .reg-active .chip.implied { background: var(--nk-surface-2); border-style: dashed; color: var(--nk-text-2); }
+    .reg-active .chip button { width: 16px; height: 16px; align-items: center; justify-content: center; }
+    .reg-unparsed { flex-basis: 100%; font-size: .8rem; color: var(--nk-warning); display: flex; gap: 6px; align-items: center; }
+    .reg-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .reg-cats { display: flex; flex-wrap: wrap; gap: 6px; }
+    .reg-cats .btn { border-radius: 999px; }
+    .reg-adv-toggle .badge { margin-left: 2px; }
+    .reg-adv-toggle .icon { transition: transform .15s; }
+    .reg-adv-toggle .reg-rot { transform: rotate(180deg); }
+    .reg-adv { margin-bottom: 18px; }
+    .reg-adv .card-body { padding: 18px 22px; }
+    .reg-adv .form-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .reg-adv .reg-checks { display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: center; }
+    .reg-adv .card-foot { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+    .reg-range { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+    .reg-table .card-head { flex-wrap: wrap; gap: 6px 14px; }
+    .reg-totals { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+    .reg-totals strong { font-size: 1.05rem; color: var(--nk-text); font-variant-numeric: tabular-nums; }
+    .reg-table .table td { vertical-align: middle; }
+    .reg-table .table { min-width: 1020px; } /* narrow screens scroll the table sideways instead of crushing it */
+    .reg-table .cell-main a { white-space: nowrap; }
+    .reg-table .table th:nth-child(2), .reg-table .table td:nth-child(2) { min-width: 220px; }
+    .reg-table .cell-main a { color: var(--nk-primary-700); font-weight: 700; text-decoration: none; }
+    .reg-table .cell-main a:hover { text-decoration: underline; }
+    .reg-mat { display: flex; flex-direction: column; gap: 3px; align-items: flex-start; }
+    .reg-body { position: relative; min-height: 120px; transition: opacity .15s; }
+    .reg-body.dim { opacity: .55; pointer-events: none; }
+    .reg-busy { width: 18px; height: 18px; border-width: 2px; }
+    @media (max-width: 1100px) { .reg-adv .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 760px) {
+      .reg-search .card-body, .reg-adv .card-body { padding: 16px; }
+      .reg-search .smart-search { flex-wrap: wrap; padding: 8px 8px 8px 12px; }
+      .reg-search .smart-search input { flex: 1 1 180px; }
+      .reg-adv .form-grid { grid-template-columns: minmax(0, 1fr); }
+      .reg-bar { align-items: stretch; }
+      .reg-adv-toggle { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body data-page="officer-fdrs">
+  <header id="nk-header"></header>
+  <div id="nk-pagehead"></div>
+  <main id="main" class="nk-main">
+    <div class="nk-container">
+
+      <section class="card reg-search accent-top" aria-labelledby="reg-ss-title">
+        <div class="card-body">
+          <div class="reg-eyebrow" id="reg-ss-title"><span id="reg-ss-eyebrow-icon"></span><span data-i18n="reg.ss_title">Smart search - ask in plain words</span></div>
+          <form class="smart-search" id="reg-ss-form" role="search" novalidate>
+            <span class="ss-icon" id="reg-ss-icon"></span>
+            <label class="sr-only" for="reg-ss-input" data-i18n="reg.ss_label">Describe the instruments you are looking for</label>
+            <input id="reg-ss-input" type="search" autocomplete="off" maxlength="200" data-i18n-placeholder="reg.ss_ph" placeholder='Try "expiring in 60 days in Tamil Nadu above 50 lakh"'>
+            <button class="btn" type="submit" id="reg-ss-btn"><span id="reg-ss-btn-icon"></span><span data-i18n="common.search">Search</span></button>
+          </form>
+          <div class="reg-try" id="reg-try"></div>
+          <div class="reg-active" id="reg-active" hidden aria-live="polite"></div>
+          <div class="reg-how"><span id="reg-how-icon"></span><span data-i18n="reg.ss_how">Understands states, banks, amounts in lakh or crore, maturity windows, status, trust level, risk, lien and institution type. The query is read by rules on the portal itself - nothing is sent to an outside AI service.</span></div>
+        </div>
+      </section>
+
+      <div class="reg-bar">
+        <div class="reg-cats" id="reg-cats" role="group" data-i18n-aria="reg.cats_label" aria-label="Quick category"></div>
+        <button class="btn secondary reg-adv-toggle" type="button" id="reg-adv-toggle" aria-expanded="false" aria-controls="reg-adv"></button>
+      </div>
+
+      <section class="card reg-adv" id="reg-adv" hidden aria-labelledby="reg-adv-title">
+        <div class="card-head"><h3 id="reg-adv-title"><span id="reg-adv-icon"></span><span data-i18n="reg.adv_title">Advanced filters</span></h3><span class="sub" data-i18n="reg.adv_sub">Combine any of these; empty fields are ignored</span></div>
+        <form id="reg-adv-form" novalidate>
+          <div class="card-body">
+            <div class="form-grid">
+              <div class="field"><label for="f-category" data-i18n="reg.f.category">Category</label><select class="select" id="f-category" name="category"></select></div>
+              <div class="field"><label for="f-display_status" data-i18n="f.status">Status</label><select class="select" id="f-display_status" name="display_status"></select></div>
+              <div class="field"><label for="f-trust" data-i18n="f.trust">Trust level</label><select class="select" id="f-trust" name="trust"></select></div>
+              <div class="field"><label for="f-risk_band" data-i18n="reg.f.risk_band">Risk band</label><select class="select" id="f-risk_band" name="risk_band"></select></div>
+              <div class="field"><label for="f-state" data-i18n="f.state">State</label><select class="select" id="f-state" name="state"></select></div>
+              <div class="field"><label for="f-bank_id" data-i18n="f.bank">Bank</label><select class="select" id="f-bank_id" name="bank_id"></select></div>
+              <div class="field"><label for="f-type" data-i18n="reg.f.type">Institution type</label><select class="select" id="f-type" name="type"></select></div>
+              <div class="field"><label for="f-lien" data-i18n="f.lien">Lien</label><select class="select" id="f-lien" name="lien"></select></div>
+              <div class="field">
+                <span class="label" id="lbl-maturity" data-i18n="reg.f.maturity">Maturity between</span>
+                <div class="reg-range" role="group" aria-labelledby="lbl-maturity">
+                  <label class="sr-only" for="f-maturity_from" data-i18n="reg.f.from">From</label><input class="input" type="date" id="f-maturity_from" name="maturity_from">
+                  <label class="sr-only" for="f-maturity_to" data-i18n="reg.f.to">To</label><input class="input" type="date" id="f-maturity_to" name="maturity_to">
+                </div>
+              </div>
+              <div class="field">
+                <span class="label" id="lbl-amount" data-i18n="reg.f.amount">Amount (in lakh ₹)</span>
+                <div class="reg-range" role="group" aria-labelledby="lbl-amount">
+                  <label class="sr-only" for="f-amount_min" data-i18n="reg.f.min">Minimum</label><input class="input" type="number" min="0" step="0.5" inputmode="decimal" id="f-amount_min" name="amount_min" data-i18n-placeholder="reg.f.min" placeholder="Minimum">
+                  <label class="sr-only" for="f-amount_max" data-i18n="reg.f.max">Maximum</label><input class="input" type="number" min="0" step="0.5" inputmode="decimal" id="f-amount_max" name="amount_max" data-i18n-placeholder="reg.f.max" placeholder="Maximum">
+                </div>
+              </div>
+              <div class="field full reg-checks">
+                <label class="check"><input type="checkbox" id="f-has_open_discrepancy" name="has_open_discrepancy"> <span data-i18n="reg.f.open_disc">Only with an open discrepancy</span></label>
+                <label class="check"><input type="checkbox" id="f-flagged" name="flagged"> <span data-i18n="reg.f.flagged">Only flagged instruments</span></label>
+              </div>
+            </div>
+            <div class="error" id="reg-adv-error" role="alert" hidden></div>
+          </div>
+          <div class="card-foot">
+            <button class="btn ghost" type="button" id="reg-adv-clear"><span data-i18n="common.clear">Clear</span></button>
+            <button class="btn" type="submit" id="reg-adv-apply"><span data-i18n="common.apply">Apply</span></button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card reg-table" aria-labelledby="reg-table-title">
+        <div class="card-head">
+          <h2 id="reg-table-title"><span id="reg-table-icon"></span><span data-i18n="reg.table_title">Instruments</span></h2>
+          <div class="reg-totals sub" id="reg-totals" aria-live="polite"></div>
+          <span class="spinner reg-busy" id="reg-busy" hidden></span>
+        </div>
+        <div class="card-body flush reg-body" id="reg-body"></div>
+        <div id="reg-pager"></div>
+      </section>
+
+    </div>
+  </main>
+  <div id="nk-footer"></div>
+  <script type="module" src="fdrs.js"></script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Deposit ledger · Nidhi Kavach</title>
+  <meta name="description" content="Mock bank portal: ledger of fixed deposits with lien to AICTE and simulated bank-side events">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <script src="../assets/js/config.js"></script>
+  <style>
+    .dp-sim { margin-bottom: 18px; }
+    .dp-top { align-items: stretch; }
+    .dp-filters .btn-group { flex-wrap: wrap; }
+    .dp-filters .btn .count { margin-left: 6px; font-size: .75rem; padding: 0 7px; border-radius: 999px; background: var(--nk-slate-50); color: var(--nk-text-2); font-weight: 600; }
+    .dp-filters .btn.active .count { background: var(--nk-primary-100); color: var(--nk-primary-700); }
+    .dp-search { flex: 1 1 280px; min-width: 0; }
+    .dp-note ul { margin: 0; padding-left: 18px; display: grid; gap: 8px; font-size: .86rem; color: var(--nk-text-2); }
+    .dp-legend { display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: var(--nk-danger-50); border: 1px solid var(--nk-danger); vertical-align: middle; margin-right: 4px; }
+    .dp-menu { position: fixed; right: auto; top: 0; left: 0; z-index: 300; min-width: 240px; }
+    .dp-menu button[disabled] { color: var(--nk-muted); cursor: not-allowed; background: none; }
+    .dp-menu .dp-mi-sub { display: block; font-size: .75rem; color: var(--nk-muted); }
+    .dp-menu .danger { color: var(--nk-danger); }
+    .dp-menu .menu-head { font-family: var(--nk-mono); }
+    .dp-total { font-size: .85rem; color: var(--nk-text-2); }
+    .dp-renew-box { text-align: center; padding: 8px 0; }
+    .dp-renew-box .dp-newno { font-family: var(--nk-mono); font-size: 1.35rem; font-weight: 700; color: var(--nk-primary-700); letter-spacing: .04em; margin: 6px 0 4px; }
+    @media (max-width: 640px) { .dp-search { flex-basis: 100%; } }
+    @media (max-width: 900px) { #table table { min-width: 960px; } }
+  </style>
+</head>
+<body data-page="bank-deposits">
+  <header id="nk-header"></header>
+  <div id="nk-pagehead"></div>
+  <main id="main" class="nk-main">
+    <div class="nk-container stack lg">
+      <section class="grid g-2-1 dp-top">
+        <div class="stack">
+        <div id="sim-note" class="alert saffron mb-0" role="note"></div>
+        <div class="card grow">
+          <div class="card-head">
+            <div>
+              <h3><span data-icon="filter"></span><span data-i18n="common.filters">Filters</span></h3>
+              <div class="sub" data-i18n="dep.filters_sub">Filter the ledger by status or search by FDR number, holder, institution or AICTE ID</div>
+            </div>
+          </div>
+          <div class="card-body stack dp-filters">
+            <div class="btn-group" role="group" id="status-filter" aria-label="Status"></div>
+            <form class="row" id="search-form" role="search">
+              <div class="input-icon dp-search">
+                <span class="icon" data-icon="search"></span>
+                <label for="q" class="sr-only" data-i18n="common.search">Search</label>
+                <input class="input" id="q" type="search" autocomplete="off" data-i18n-placeholder="dep.search_ph" placeholder="FDR number, holder, institution or AICTE ID">
+              </div>
+              <button class="btn secondary" type="submit"><span data-i18n="common.search">Search</span></button>
+              <button class="btn ghost" type="button" id="clear-btn"><span data-i18n="common.clear">Clear</span></button>
+            </form>
+          </div>
+        </div>
+        </div>
+        <aside class="card accent-top accent-saffron dp-note">
+          <div class="card-head"><h3><span data-icon="shield-alert"></span><span data-i18n="dep.note_title">What AICTE’s portal will notice</span></h3></div>
+          <div class="card-body"><ul id="note-list"></ul></div>
+        </aside>
+      </section>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h3><span data-icon="layers"></span><span data-i18n="dep.table_title">Fixed deposits issued by your bank</span></h3>
+            <div class="sub dp-total" id="total-line"></div>
+          </div>
+          <button class="btn sm secondary" type="button" id="refresh-btn"></button>
+        </div>
+        <div id="table"></div>
+        <div id="pager"></div>
+      </div>
+    </div>
+  </main>
+  <div id="nk-footer"></div>
+  <script type="module" src="deposits.js"></script>
+</body>
+</html>

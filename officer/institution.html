@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Institution · Nidhi Kavach</title>
+  <meta name="description" content="Institution profile, security-deposit coverage, instruments and renewal history">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/vendor/chart.umd.min.js"></script>
+  <style>
+    .ins-cov-figs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .ins-fig { background: var(--nk-surface-2); border: 1px solid var(--nk-border); border-radius: var(--nk-radius); padding: 12px 14px; min-width: 0; }
+    .ins-fig .l { font-size: .74rem; color: var(--nk-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+    .ins-fig .v { font-size: 1.35rem; font-weight: 800; font-variant-numeric: tabular-nums; margin-top: 2px; white-space: nowrap; }
+    .ins-fig.bad { background: var(--nk-danger-50); border-color: var(--nk-danger-50); } .ins-fig.bad .v { color: var(--nk-danger); }
+    .ins-fig.good .v { color: var(--nk-success); }
+    .ins-meter-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin: 18px 0 6px; font-size: .88rem; }
+    .ins-meter-head strong { font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+    .ins-chart-title { font-size: .82rem; font-weight: 700; color: var(--nk-text-2); margin: 20px 0 6px; display: flex; align-items: center; gap: 6px; }
+    .ins-ident { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+    .ins-ident .feature-icon { flex: none; }
+    .ins-ident .nm { font-weight: 700; font-size: 1.02rem; line-height: 1.3; }
+    .ins-users { margin-top: 18px; border-top: 1px solid var(--nk-border); padding-top: 14px; }
+    .ins-users h3 { font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; color: var(--nk-muted); margin: 0 0 8px; }
+    .ins-user { display: flex; gap: 10px; align-items: center; padding: 8px 0; }
+    .ins-user + .ins-user { border-top: 1px dashed var(--nk-border); }
+    .ins-user .who { min-width: 0; } .ins-user .who a { word-break: break-all; }
+    .ins-bank-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; padding: 10px 0; align-items: center; }
+    .ins-bank-row + .ins-bank-row { border-top: 1px solid var(--nk-border); }
+    .ins-bank-row .meter { grid-column: 1 / -1; height: 6px; }
+    @media (max-width: 640px) { .ins-cov-figs { grid-template-columns: minmax(0, 1fr); } .ins-fig .v { font-size: 1.2rem; } }
+  </style>
+</head>
+<body data-page="officer-institution">
+  <header id="nk-header"></header>
+  <div id="nk-pagehead"></div>
+  <main id="main" class="nk-main">
+    <div class="nk-container" id="page">
+      <section class="section" aria-label="Key figures">
+        <div class="grid g-4" id="kpis"></div>
+      </section>
+
+      <div class="grid g-2-1 section">
+        <section class="card accent-top" aria-labelledby="cov-h">
+          <div class="card-head"><h2 id="cov-h"></h2><span class="sub" id="cov-sub"></span></div>
+          <div class="card-body" id="coverage"></div>
+        </section>
+        <section class="card" aria-labelledby="prof-h">
+          <div class="card-head"><h2 id="prof-h"></h2><span id="prof-status"></span></div>
+          <div class="card-body" id="profile"></div>
+        </section>
+      </div>
+
+      <section class="card section" aria-labelledby="fdrs-h">
+        <div class="card-head"><h2 id="fdrs-h"></h2><span class="sub" id="fdrs-sub"></span></div>
+        <div class="card-body flush" id="fdrs"></div>
+      </section>
+
+      <div class="grid g-2-1">
+        <section class="card" aria-labelledby="ren-h">
+          <div class="card-head"><h2 id="ren-h"></h2><span id="ren-badge"></span></div>
+          <div class="card-body" id="renewals"></div>
+        </section>
+        <section class="card" aria-labelledby="bank-h">
+          <div class="card-head"><h2 id="bank-h"></h2></div>
+          <div class="card-body" id="banks"></div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div id="nk-footer"></div>
+  <script type="module" src="institution.js"></script>
+</body>
+</html>

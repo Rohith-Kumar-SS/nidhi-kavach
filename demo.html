@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Judge's demo guide · Nidhi Kavach</title>
+  <meta name="description" content="Run every SIH26265 problem-statement test case in one click: role sign-in, scenarios, demo clock and coverage map">
+  <link rel="stylesheet" href="assets/css/theme.css">
+  <script src="assets/js/config.js"></script>
+  <style>
+    .dg-intro { align-items: stretch; }
+    .dg-intro .hero-figure { display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+    .dg-intro .hf-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; position: relative; z-index: 1; }
+    .dg-intro .hf-chips a { color: var(--nk-surface); background: rgba(255, 255, 255, .14); border: 1px solid rgba(255, 255, 255, .28); border-radius: 999px; padding: 5px 12px;
+      font-size: .84rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+    .dg-intro .hf-chips a:hover, .dg-intro .hf-chips a:focus-visible { background: rgba(255, 255, 255, .26); }
+    .dg-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+    .dg-steps li { display: flex; gap: 12px; align-items: flex-start; }
+    .dg-steps .n { flex: none; width: 30px; height: 30px; border-radius: 50%; background: var(--nk-primary-50); color: var(--nk-primary-700); font-weight: 800; display: grid; place-items: center; }
+    .dg-steps strong { display: block; }
+    .dg-steps span { color: var(--nk-text-2); font-size: .88rem; }
+    .dg-pw { display: inline-flex; align-items: center; gap: 8px; background: var(--nk-saffron-50); border: 1px dashed var(--nk-saffron); border-radius: var(--nk-radius-sm); padding: 6px 10px; font-size: .88rem; }
+    .dg-pw code { font-family: var(--nk-mono); font-weight: 700; }
+    .dg-role { display: flex; flex-direction: column; gap: 10px; height: 100%; }
+    .dg-role .r-top { display: flex; align-items: center; gap: 12px; }
+    .dg-role .r-top .avatar { flex: none; }
+    .dg-role .r-name { font-weight: 700; line-height: 1.25; }
+    .dg-role .r-org { font-size: .82rem; color: var(--nk-muted); }
+    .dg-role .r-story { color: var(--nk-text-2); font-size: .88rem; flex: 1; }
+    .dg-role .btn, .dg-role > .badge { align-self: flex-start; }
+    .dg-role.featured { border-top: 3px solid var(--nk-saffron); }
+    .dg-sc { display: flex; flex-direction: column; }
+    .dg-sc .card-body { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+    .dg-sc .sc-head { display: flex; gap: 12px; align-items: flex-start; }
+    .dg-sc .sc-head .feature-icon { flex: none; }
+    .dg-sc .sc-head h3 { margin: 4px 0 2px; font-size: 1.06rem; }
+    .dg-sc .sc-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .dg-sc ol { margin: 0; padding-left: 20px; display: grid; gap: 6px; color: var(--nk-text-2); font-size: .88rem; }
+    .dg-sc .sc-opts { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+    .dg-sc .sc-opts .input { width: 96px; }
+    .dg-sc .card-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .dg-result { border-top: 1px solid var(--nk-border); padding: 14px 18px; background: var(--nk-surface-2); display: grid; gap: 10px; }
+    .dg-result:empty { display: none; }
+    .dg-result .alert { margin: 0; }
+    .dg-result details summary { cursor: pointer; font-weight: 600; font-size: .9rem; }
+    .dg-result details ul, .dg-result .nx { margin: 6px 0 0; padding-left: 20px; color: var(--nk-text-2); font-size: .86rem; display: grid; gap: 4px; }
+    .dg-links { display: flex; flex-wrap: wrap; gap: 8px; }
+    .dg-gate { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+    .dg-gate .feature-icon { flex: none; }
+    .dg-gate > div { flex: 1 1 260px; }
+    .dg-clock-dates { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .dg-date { border: 1px solid var(--nk-border); border-radius: var(--nk-radius); padding: 12px 14px; background: var(--nk-surface-2); min-width: 0; }
+    .dg-date.sim { background: var(--nk-saffron-50); border-color: var(--nk-saffron); }
+    .dg-date .lbl { font-size: .76rem; text-transform: uppercase; letter-spacing: .05em; color: var(--nk-muted); font-weight: 700; }
+    .dg-date .val { font-size: 1.35rem; font-weight: 700; margin: 2px 0; font-variant-numeric: tabular-nums; }
+    .dg-jump { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; }
+    .dg-jump .field { flex: 1 1 170px; }
+    .dg-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 8px; }
+    .dg-stat { background: var(--nk-surface); border: 1px solid var(--nk-border); border-radius: var(--nk-radius-sm); padding: 8px 10px; }
+    .dg-stat .v { font-size: 1.2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .dg-stat .v.hl { color: var(--nk-primary); }
+    .dg-stat .l { font-size: .76rem; color: var(--nk-text-2); }
+    .dg-ladder { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+    .dg-ladder li { display: flex; gap: 10px; align-items: flex-start; font-size: .88rem; color: var(--nk-text-2); }
+    .dg-ladder li .ic { flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--nk-primary-50); color: var(--nk-primary); }
+    .dg-ladder li .ic.w { background: var(--nk-warning-50); color: var(--nk-warning); }
+    .dg-ladder li .ic.d { background: var(--nk-danger-50); color: var(--nk-danger); }
+    .dg-ladder li strong { color: var(--nk-text); display: block; }
+    .dg-cov td:first-child { width: 44px; }
+    .dg-cov .cap { font-weight: 700; }
+    .dg-cov .where { display: flex; flex-wrap: wrap; gap: 6px; }
+    .dg-cov .where a { white-space: nowrap; }
+    .dg-num { width: 30px; height: 30px; border-radius: 50%; display: inline-grid; place-items: center; background: var(--nk-success-50); color: var(--nk-success); font-weight: 800; }
+    .dg-innov { display: flex; gap: 12px; align-items: flex-start; }
+    .dg-innov .feature-icon { flex: none; }
+    .dg-innov h4 { margin: 0 0 3px; font-size: .98rem; }
+    .dg-innov p { margin: 0; color: var(--nk-text-2); font-size: .86rem; }
+    @media (max-width: 640px) {
+      .dg-clock-dates { grid-template-columns: 1fr; }
+      .section-title { flex-wrap: wrap; }
+      .dg-sc .card-foot .btn { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body data-page="demo">
+  <header id="nk-header"></header>
+  <div id="nk-pagehead"></div>
+  <main id="main" class="nk-main">
+    <div class="nk-container stack lg">
+      <section class="grid g-2-1 dg-intro" aria-label="Quick start">
+        <div class="hero-figure">
+          <div class="hf-label" data-i18n="demo.hero_label">Problem statement SIH26265 · AICTE</div>
+          <div class="hf-value" id="hero-value">10 / 10</div>
+          <div class="hf-sub" data-i18n="demo.hero_sub">expected capabilities are working in this prototype. Every test case below runs on real demo data in one click, and every result links to the screen that proves it.</div>
+          <nav class="hf-chips" aria-label="On this page" id="toc"></nav>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3><span data-icon="play"></span> <span data-i18n="demo.how_h">How to use this guide</span></h3></div>
+          <div class="card-body stack">
+            <ol class="dg-steps">
+              <li><span class="n">1</span><div><strong data-i18n="demo.how1_t">Sign in as any role</strong><span data-i18n="demo.how1">One click: no typing. Each account tells a different story.</span></div></li>
+              <li><span class="n">2</span><div><strong data-i18n="demo.how2_t">Run a test scenario</strong><span data-i18n="demo.how2">The portal sets up the case live: bank, institution and daily job.</span></div></li>
+              <li><span class="n">3</span><div><strong data-i18n="demo.how3_t">Follow the result links</strong><span data-i18n="demo.how3">Open the exact screen that shows the outcome, in the right role.</span></div></li>
+            </ol>
+            <div class="dg-pw"><span data-icon="key"></span><span data-i18n="demo.pw">Password for every demo account:</span> <code>Demo@2026</code></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="roles" aria-labelledby="roles-h">
+        <div class="section-title">
+          <h2 id="roles-h" data-i18n="demo.roles_h">Sign in as</h2>
+          <span class="muted small" data-i18n="demo.roles_sub">All people, institutions and banks are fictitious demo data.</span>
+        </div>
+        <div class="grid g-4" id="role-cards"></div>
+      </section>
+
+      <section id="scenarios" aria-labelledby="sc-h">
+        <div class="section-title">
+          <h2 id="sc-h" data-i18n="demo.sc_h">Test scenarios</h2>
+          <span class="muted small" data-i18n="demo.sc_sub">Each card is one test case from the problem statement.</span>
+        </div>
+        <div id="sc-area"></div>
+      </section>
+
+      <section id="clock" aria-labelledby="clock-h">
+        <div class="section-title">
+          <h2 id="clock-h" data-i18n="demo.clock_h">Demo clock</h2>
+          <span class="muted small" data-i18n="demo.clock_sub">Move time forward to watch reminders and escalations happen.</span>
+        </div>
+        <div class="grid g-2-1">
+          <div class="card accent-top accent-saffron">
+            <div class="card-head"><h3><span data-icon="calendar"></span> <span data-i18n="demo.clock_card">Portal date</span></h3><span id="clock-badge"></span></div>
+            <div class="card-body stack" id="clock-body"></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3><span data-icon="zap"></span> <span data-i18n="demo.job_h">What the daily job does</span></h3></div>
+            <div class="card-body">
+              <ul class="dg-ladder">
+                <li><span class="ic" data-icon="bell"></span><div><strong data-i18n="demo.job1_t">Reminders before maturity</strong><span data-i18n="demo.job1">90, 60, 30 and 7 days before: institution first, officers copied from 30 days.</span></div></li>
+                <li><span class="ic w" data-icon="flag"></span><div><strong data-i18n="demo.job2_t">Escalation after maturity</strong><span data-i18n="demo.job2">Institution on day 0, officers on day 7, competent authority on day 15.</span></div></li>
+                <li><span class="ic d" data-icon="hourglass"></span><div><strong data-i18n="demo.job3_t">SLA watch</strong><span data-i18n="demo.job3">Stale verifications and release requests past their stage SLA.</span></div></li>
+                <li><span class="ic" data-icon="bank"></span><div><strong data-i18n="demo.job4_t">Bank re-checks</strong><span data-i18n="demo.job4">Asks the bank again about older deposits: catches pre-closure and removed liens.</span></div></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="coverage" aria-labelledby="cov-h">
+        <div class="section-title">
+          <h2 id="cov-h" data-i18n="demo.cov_h">Problem statement coverage</h2>
+          <span class="muted small" data-i18n="demo.cov_sub">The 10 expected capabilities of SIH26265 and where to see each one.</span>
+        </div>
+        <div class="card"><div class="card-body flush" id="cov"></div></div>
+      </section>
+
+      <section id="innovations" aria-labelledby="inn-h">
+        <div class="section-title">
+          <h2 id="inn-h" data-i18n="demo.inn_h">What is new in Nidhi Kavach</h2>
+          <span class="muted small" data-i18n="demo.inn_sub">Beyond the checklist: ideas that make deposits harder to fake and easier to track.</span>
+        </div>
+        <div class="grid g-2" id="inn"></div>
+      </section>
+    </div>
+  </main>
+  <div id="nk-footer"></div>
+  <script type="module" src="demo.js"></script>
+</body>
+</html>

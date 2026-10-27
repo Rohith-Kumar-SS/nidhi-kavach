@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Audit trail · Nidhi Kavach</title>
+  <meta name="description" content="Hash-chained, tamper-evident audit trail of every action on Nidhi Kavach with one-click integrity check">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <script src="../assets/js/config.js"></script>
+  <style>
+    .aud-head-hash { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; font-size: .86rem; }
+    .aud-head-hash code { font-family: var(--nk-mono); background: var(--nk-surface); border: 1px solid var(--nk-border); border-radius: var(--nk-radius-sm); padding: 3px 8px; font-size: .8rem; color: var(--nk-text); }
+    .aud-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+    .aud-stat { border: 1px solid var(--nk-border); border-radius: var(--nk-radius); padding: 10px 12px; background: var(--nk-surface-2); min-width: 0; }
+    .aud-stat .l { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: var(--nk-muted); font-weight: 600; }
+    .aud-stat .v { font-weight: 700; margin-top: 2px; font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .aud-steps { counter-reset: s; display: grid; gap: 14px; }
+    .aud-step { display: flex; gap: 12px; align-items: flex-start; }
+    .aud-step .n { flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: .85rem; background: var(--nk-primary-50); color: var(--nk-primary); }
+    .aud-step .t { font-weight: 600; font-size: .92rem; } .aud-step .d { font-size: .84rem; color: var(--nk-text-2); }
+    .aud-tamper-state { margin-top: 12px; font-size: .86rem; }
+    .aud-tamper-state .was { text-decoration: line-through; color: var(--nk-muted); }
+    .aud-filters { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr)) repeat(2, minmax(0, .9fr)) auto; gap: 12px 14px; align-items: end; }
+    .aud-filters .f-actions { height: 38px; display: flex; align-items: center; gap: 12px; }
+    @media (max-width: 1200px) { .aud-filters .f-actions { grid-column: 1 / -1; justify-content: space-between; height: auto; } }
+    .aud-hash { font-family: var(--nk-mono); font-size: .76rem; color: var(--nk-text-2); background: var(--nk-surface-2); border: 1px solid var(--nk-border); border-radius: var(--nk-radius-sm); padding: 2px 6px; white-space: nowrap; cursor: help; }
+    .aud-sum { max-width: 520px; font-size: .88rem; line-height: 1.4; }
+    .aud-actor { white-space: nowrap; } .aud-actor .badge { margin-top: 3px; }
+    .aud-actor-btn { background: none; border: 0; padding: 0; font: inherit; font-weight: 600; color: var(--nk-text); cursor: pointer; text-align: left; }
+    .aud-actor-btn:hover, .aud-actor-btn:focus-visible { color: var(--nk-link); text-decoration: underline; }
+    @media (max-width: 1200px) { .aud-filters { grid-template-columns: repeat(3, minmax(0, 1fr)); } .aud-filters .f-search { grid-column: 1 / -1; } }
+    @media (max-width: 640px) { .aud-filters { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .aud-filters .f-wide { grid-column: 1 / -1; } .aud-stats { grid-template-columns: minmax(0, 1fr); } }
+  </style>
+</head>
+<body data-page="officer-audit">
+  <header id="nk-header"></header>
+  <div id="nk-pagehead"></div>
+  <main id="main" class="nk-main">
+    <div class="nk-container">
+      <div class="grid g-2-1 section">
+        <section class="card accent-top" aria-labelledby="int-h" aria-live="polite">
+          <div class="card-head"><h2 id="int-h"></h2><span class="sub" id="int-sub"></span></div>
+          <div class="card-body" id="integrity"></div>
+        </section>
+        <section class="card" aria-labelledby="how-h">
+          <div class="card-head"><h2 id="how-h"></h2></div>
+          <div class="card-body"><div class="aud-steps" id="how"></div></div>
+        </section>
+      </div>
+
+      <section class="card accent-saffron section" id="tamper" hidden aria-labelledby="tmp-h">
+        <div class="card-head"><h2 id="tmp-h"></h2><span id="tmp-badge"></span></div>
+        <div class="card-body" id="tamper-body"></div>
+      </section>
+
+      <section class="card section">
+        <div class="card-body">
+          <form class="aud-filters" id="filters" role="search" onsubmit="return false">
+            <div class="field f-search">
+              <label for="f-q" data-i18n="aud.f_search">Search</label>
+              <div class="input-icon"><span id="f-q-icon"></span><input class="input" id="f-q" type="search" autocomplete="off" data-i18n-placeholder="aud.f_search_ph" placeholder="Summary, reference or person"></div>
+            </div>
+            <div class="field f-wide"><label for="f-action" data-i18n="aud.f_action">Action</label><select class="select" id="f-action"></select></div>
+            <div class="field"><label for="f-entity" data-i18n="aud.f_entity">Record type</label><select class="select" id="f-entity"></select></div>
+            <div class="field"><label for="f-actor" data-i18n="aud.f_actor">Actor</label><select class="select" id="f-actor"></select></div>
+            <div class="field"><label for="f-from" data-i18n="aud.f_from">From</label><input class="input" id="f-from" type="date"></div>
+            <div class="field"><label for="f-to" data-i18n="aud.f_to">To</label><input class="input" id="f-to" type="date"></div>
+            <div class="f-actions"><label class="check nowrap"><input type="checkbox" id="f-nologin"> <span data-i18n="aud.f_nologin">Hide sign-ins</span></label><button class="btn ghost sm" type="button" id="f-clear"></button></div>
+          </form>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><h2 id="list-title"></h2><span class="sub" id="list-sub"></span></div>
+        <div class="card-body flush" id="list"></div>
+        <div id="pager"></div>
+      </section>
+    </div>
+  </main>
+  <div id="nk-footer"></div>
+  <script type="module" src="audit.js"></script>
+</body>
+</html>

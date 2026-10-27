@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Instrument detail · Nidhi Kavach</title>
+  <meta name="description" content="Fixed deposit receipt detail, verification and audit trail on Nidhi Kavach">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <script src="../assets/js/config.js"></script>
+  <style>
+    .fd-alerts:empty { display: none; }
+    .fd-alerts { display: grid; gap: 10px; }
+    .fd-head { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 0; }
+    .fd-head > .fd-main { padding: 22px 24px; min-width: 0; }
+    .fd-head > .fd-risk { padding: 22px 24px; border-left: 1px solid var(--nk-border); background: var(--nk-surface-2); min-width: 0; border-top-right-radius: var(--nk-radius-lg); }
+    .fd-badges { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .fd-amount { font-size: 2.35rem; font-weight: 800; line-height: 1.1; color: var(--nk-navy); font-variant-numeric: tabular-nums; margin: 12px 0 2px; letter-spacing: -.01em; }
+    .fd-amount-sub { color: var(--nk-muted); font-size: .9rem; }
+    .fd-ids { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 20px; margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--nk-border); }
+    .fd-ids .lbl, .fd-facts .lbl { font-size: .72rem; color: var(--nk-muted); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 3px; display: flex; align-items: center; gap: 5px; }
+    .fd-ids .val { font-weight: 600; color: var(--nk-text); word-break: break-word; }
+    .fd-ids .sub { font-size: .82rem; color: var(--nk-muted); }
+    .fd-copy { border: 0; background: none; color: var(--nk-link); cursor: pointer; padding: 2px 4px; border-radius: 4px; vertical-align: middle; }
+    .fd-copy:hover { background: var(--nk-primary-50); }
+    .fd-ladder-wrap { margin-top: 18px; }
+    .fd-ladder-wrap .ladder-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+    .fd-ladder-wrap .ladder-head h3 { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--nk-muted); margin: 0; }
+    .trust-ladder .rung.current.flag-current { box-shadow: 0 0 0 2px var(--nk-danger); }
+    .trust-ladder .rung .r-here { position: absolute; top: -9px; right: 8px; font-size: .66rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; background: var(--nk-primary); color: var(--nk-surface); border-radius: 4px; padding: 1px 6px; }
+    .trust-ladder .rung.flag-current .r-here { background: var(--nk-danger); }
+    .fd-risk-top { display: flex; gap: 16px; align-items: center; }
+    .fd-gauge.gauge { width: 150px; height: 86px; flex: none; }
+    .fd-gauge.gauge svg { width: 150px; height: 86px; }
+    .fd-gauge .g-value { font-size: 1.7rem; bottom: 2px; }
+    .fd-risk h3 { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--nk-muted); margin: 0 0 6px; }
+    .fd-reasons { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 7px; }
+    .fd-reasons li { display: flex; gap: 10px; align-items: flex-start; font-size: .86rem; line-height: 1.4; background: var(--nk-surface); border: 1px solid var(--nk-border); border-radius: var(--nk-radius-sm); padding: 7px 10px; }
+    .fd-reasons .pts { flex: none; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--nk-danger); min-width: 34px; }
+    .fd-facts { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+    .fd-facts > div { padding: 14px 16px; border-right: 1px solid var(--nk-border); min-width: 0; }
+    .fd-facts > div:last-child { border-right: 0; }
+    .fd-facts .val { font-weight: 600; font-size: .92rem; word-break: break-word; }
+    .fd-facts .sub { font-size: .78rem; color: var(--nk-muted); margin-top: 3px; }
+    .fd-actions { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: flex-start; }
+    .fd-actions .grp { display: flex; flex-direction: column; gap: 6px; }
+    .fd-actions .grp-lbl { font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; color: var(--nk-muted); font-weight: 700; }
+    .fd-actions .grp-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+    .fd-next { display: flex; gap: 10px; align-items: flex-start; padding: 12px 16px; background: var(--nk-primary-50); border-bottom: 1px solid var(--nk-border); color: var(--nk-primary-700); font-size: .9rem; border-top-left-radius: var(--nk-radius-lg); border-top-right-radius: var(--nk-radius-lg); }
+    .fd-next strong { color: var(--nk-navy); }
+    .cmp-legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: .82rem; color: var(--nk-text-2); }
+    .cmp-legend span b { margin-right: 4px; }
+    .compare-table td.cmp-claimed { font-weight: 600; color: var(--nk-text); }
+    .compare-table th[scope="row"] { text-align: left; white-space: nowrap; }
+    .compare-table .cmp-v { font-variant-numeric: tabular-nums; }
+    .doc-list .list-item { cursor: pointer; border-left: 3px solid transparent; }
+    .doc-list .list-item:hover { background: var(--nk-surface-2); }
+    .doc-list .list-item.sel { border-left-color: var(--nk-primary); background: var(--nk-primary-50); }
+    .doc-img { width: 100%; max-height: 640px; object-fit: contain; border: 1px solid var(--nk-border); border-radius: 8px; background: var(--nk-surface-2); }
+    .kv-table td:first-child { color: var(--nk-muted); width: 42%; }
+    .ver-rec { margin-top: 8px; border: 1px solid var(--nk-border); border-radius: var(--nk-radius-sm); padding: 10px 12px; background: var(--nk-surface-2); }
+    .ver-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .ver-ic { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; background: var(--nk-primary-50); color: var(--nk-primary); }
+    .chain-cur { border: 2px solid var(--nk-primary); background: var(--nk-primary-50); border-radius: var(--nk-radius-sm); padding: 8px 10px; }
+    .chain-card { border: 1px solid var(--nk-border); border-radius: var(--nk-radius-sm); padding: 8px 10px; background: var(--nk-surface); }
+    .disc-item.closed { opacity: .85; }
+    .disc-resp { margin-top: 8px; border-left: 3px solid var(--nk-info); background: var(--nk-info-50); padding: 8px 10px; border-radius: 0 6px 6px 0; font-size: .88rem; }
+    .disc-res { margin-top: 6px; font-size: .85rem; color: var(--nk-text-2); }
+    .fd-tabs-card > .card-body { padding-top: 6px; }
+    @media (max-width: 1100px) {
+      .fd-facts { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .fd-facts > div { border-bottom: 1px solid var(--nk-border); }
+    }
+    @media (max-width: 860px) {
+      .fd-head { grid-template-columns: minmax(0, 1fr); }
+      .fd-head > .fd-risk { border-left: 0; border-top: 1px solid var(--nk-border); border-radius: 0 0 var(--nk-radius-lg) var(--nk-radius-lg); }
+      .fd-ids { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .fd-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 560px) {
+      .fd-head > .fd-main, .fd-head > .fd-risk { padding: 16px; }
+      .fd-amount { font-size: 1.9rem; }
+      .fd-ids { grid-template-columns: minmax(0, 1fr); }
+      .trust-ladder { flex-direction: column; }
+      .fd-risk-top { flex-direction: column; align-items: flex-start; }
+      .doc-frame { height: 440px; }
+    }
+    @media print { .fd-actions-card { display: none; } }
+  </style>
+</head>
+<body data-page="officer-fdr">
+  <header id="nk-header"></header>
+  <div id="nk-pagehead"></div>
+  <main id="main" class="nk-main">
+    <div class="nk-container">
+      <div id="fd-root" class="stack lg" aria-live="polite"></div>
+    </div>
+  </main>
+  <div id="nk-footer"></div>
+  <script type="module" src="fdr.js"></script>
+</body>
+</html>

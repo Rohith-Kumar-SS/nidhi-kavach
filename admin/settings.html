@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Settings · Nidhi Kavach</title>
+  <meta name="description" content="Portal settings: release SLA, escalation days, impact baseline, demo clock, demo reset and key registry">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <script src="../assets/js/config.js"></script>
+  <style>
+    .st-rows { display: flex; flex-direction: column; }
+    .st-row { display: grid; grid-template-columns: minmax(0, 1fr) 132px; gap: 14px; align-items: center; padding: 12px 0; border-bottom: 1px dashed var(--nk-border); }
+    .st-row:last-child { border-bottom: 0; }
+    .st-row .r-label { font-weight: 600; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .st-row .r-desc { font-size: .82rem; color: var(--nk-muted); margin-top: 3px; }
+    .st-row .error { font-size: .78rem; color: var(--nk-danger); font-weight: 500; grid-column: 1 / -1; margin-top: -6px; }
+    .st-row .error:empty { display: none; }
+    .st-num { display: flex; align-items: center; gap: 0; }
+    .st-num .input { text-align: right; border-top-right-radius: 0; border-bottom-right-radius: 0; font-variant-numeric: tabular-nums; min-width: 0; }
+    .st-num .unit { padding: 0 10px; height: 100%; min-height: 38px; display: inline-flex; align-items: center; background: var(--nk-surface-2); border: 1px solid var(--nk-border-strong); border-left: 0;
+      border-radius: 0 var(--nk-radius-sm) var(--nk-radius-sm) 0; color: var(--nk-text-2); font-size: .82rem; white-space: nowrap; }
+    .st-total { display: flex; justify-content: space-between; align-items: center; gap: 10px; background: var(--nk-primary-50); color: var(--nk-primary-700); border-radius: var(--nk-radius-sm); padding: 10px 14px; font-weight: 600; margin-top: 6px; }
+    .st-total strong { font-size: 1.15rem; }
+    .st-ladder { display: flex; align-items: flex-start; margin: 4px 0 6px; }
+    .st-ladder .n { flex: 1; text-align: center; position: relative; font-size: .8rem; color: var(--nk-text-2); }
+    .st-ladder .n::before { content: ""; position: absolute; top: 15px; left: -50%; right: 50%; height: 3px; background: var(--nk-danger-50); }
+    .st-ladder .n:first-child::before { display: none; }
+    .st-ladder .dot { position: relative; z-index: 1; width: 32px; height: 32px; border-radius: 50%; display: inline-grid; place-items: center; background: var(--nk-surface); border: 2px solid var(--nk-danger); color: var(--nk-danger); margin-bottom: 4px; }
+    .st-ladder .n.l2 .dot { background: var(--nk-danger); color: var(--nk-surface); }
+    .st-ladder .d { font-weight: 700; color: var(--nk-text); display: block; }
+    .st-savebar { position: sticky; bottom: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+      background: var(--nk-surface); border: 1px solid var(--nk-border); border-radius: var(--nk-radius); box-shadow: var(--nk-shadow-2); padding: 12px 16px; }
+    .st-savebar .s-msg { display: flex; align-items: center; gap: 8px; color: var(--nk-text-2); font-size: .9rem; }
+    .st-savebar.dirty { border-color: var(--nk-saffron); }
+    .st-savebar.dirty .s-msg { color: var(--nk-saffron-600); font-weight: 600; }
+    .st-clock-dates { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .st-date { border: 1px solid var(--nk-border); border-radius: var(--nk-radius); padding: 12px 14px; background: var(--nk-surface-2); min-width: 0; }
+    .st-date.sim { background: var(--nk-saffron-50); border-color: var(--nk-saffron); }
+    .st-date .lbl { font-size: .76rem; text-transform: uppercase; letter-spacing: .05em; color: var(--nk-muted); font-weight: 700; }
+    .st-date .val { font-size: 1.35rem; font-weight: 700; margin: 2px 0; font-variant-numeric: tabular-nums; }
+    .st-jump { display: flex; flex-wrap: wrap; gap: 8px; }
+    .st-goto { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; }
+    .st-goto .field { flex: 1 1 180px; }
+    .st-result { border: 1px solid var(--nk-border); border-radius: var(--nk-radius); padding: 12px 14px; background: var(--nk-surface-2); }
+    .st-result .r-title { font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .st-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
+    .st-stat { background: var(--nk-surface); border: 1px solid var(--nk-border); border-radius: var(--nk-radius-sm); padding: 8px 10px; }
+    .st-stat .v { font-size: 1.2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .st-stat .v.hl { color: var(--nk-primary); }
+    .st-stat .l { font-size: .76rem; color: var(--nk-text-2); }
+    .st-danger { border-color: var(--nk-danger); }
+    .st-danger .card-head { background: var(--nk-danger-50); }
+    .st-danger .card-head h3 { color: var(--nk-danger); }
+    .st-danger ul { margin: 0 0 14px; padding-left: 18px; color: var(--nk-text-2); display: grid; gap: 4px; font-size: .9rem; }
+    .st-confirm { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+    .st-confirm .field { flex: 1 1 200px; }
+    .st-confirm .input { font-family: var(--nk-mono); letter-spacing: .12em; text-transform: uppercase; }
+    .st-key { font-family: var(--nk-mono); font-size: .78rem; color: var(--nk-text-2); max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: middle; }
+    .st-base .st-row { grid-template-columns: minmax(0, 1fr) 150px; }
+    @media (max-width: 640px) {
+      .st-row, .st-base .st-row { grid-template-columns: minmax(0, 1fr) 118px; gap: 10px; }
+      .st-clock-dates { grid-template-columns: 1fr; }
+      .st-savebar { padding: 10px 12px; }
+      .st-savebar .row { width: 100%; }
+      .st-savebar .row .btn { flex: 1; }
+    }
+  </style>
+</head>
+<body data-page="admin-settings">
+  <header id="nk-header"></header>
+  <div id="nk-pagehead"></div>
+  <main id="main" class="nk-main">
+    <div class="nk-container stack lg">
+      <div id="cfg-status"></div>
+      <form id="cfg" class="stack lg" novalidate>
+        <div class="grid g-2">
+          <section class="card accent-top" aria-labelledby="sla-h">
+            <div class="card-head">
+              <h3 id="sla-h"><span data-icon="hourglass"></span> <span data-i18n="st.sla_h">Release &amp; refund SLA</span></h3>
+              <span class="sub" data-i18n="st.sla_sub">Working days allowed in each stage</span>
+            </div>
+            <div class="card-body">
+              <div class="st-rows" id="sla"></div>
+              <div class="st-total"><span data-i18n="st.sla_total">End-to-end target (submitted → approved)</span><strong id="sla-total">—</strong></div>
+            </div>
+          </section>
+
+          <section class="card accent-top accent-saffron" aria-labelledby="esc-h">
+            <div class="card-head">
+              <h3 id="esc-h"><span data-icon="flag"></span> <span data-i18n="st.esc_h">Escalation &amp; verification</span></h3>
+              <span class="sub" data-i18n="st.esc_sub">Days after maturity before each level is alerted</span>
+            </div>
+            <div class="card-body">
+              <div class="st-ladder" id="esc-ladder" aria-hidden="true"></div>
+              <div class="st-rows" id="esc"></div>
+            </div>
+          </section>
+        </div>
+
+        <section class="card accent-top accent-green st-base" aria-labelledby="base-h">
+          <div class="card-head">
+            <h3 id="base-h"><span data-icon="trend"></span> <span data-i18n="st.base_h">Impact baseline: the manual process</span></h3>
+            <a class="btn sm ghost" id="base-link" href="#"><span data-icon="chart"></span> <span data-i18n="st.base_link">See the impact comparison</span></a>
+          </div>
+          <div class="card-body">
+            <div class="alert info"><span data-icon="info"></span><div><div class="a-title" data-i18n="st.base_info_t">Where these numbers come from</div><span data-i18n="st.base_info">These are the "before" figures for the paper-based process that Nidhi Kavach replaces: registers, physical FDR receipts, letters to banks and manual follow-up. The Analytics page compares them with what the portal measures live. Change them if your office has better estimates.</span></div></div>
+            <div class="grid g-2" style="margin-top:6px">
+              <div class="st-rows" id="base-a"></div>
+              <div class="st-rows" id="base-b"></div>
+            </div>
+          </div>
+        </section>
+
+        <div class="st-savebar" id="savebar">
+          <div class="s-msg" id="save-msg"></div>
+          <div class="row">
+            <button type="button" class="btn secondary" id="undo"><span data-icon="refresh"></span> <span data-i18n="st.undo">Undo changes</span></button>
+            <button type="submit" class="btn" id="save"><span data-icon="check"></span> <span data-i18n="st.save">Save settings</span></button>
+          </div>
+        </div>
+      </form>
+
+      <div class="grid g-2">
+        <section class="card accent-top" id="clock" aria-labelledby="clock-h">
+          <div class="card-head">
+            <h3 id="clock-h"><span data-icon="calendar"></span> <span data-i18n="st.clock_h">Demo clock</span></h3>
+            <span id="clock-badge"></span>
+          </div>
+          <div class="card-body stack" id="clock-body"></div>
+        </section>
+
+        <section class="card st-danger" aria-labelledby="reset-h">
+          <div class="card-head">
+            <h3 id="reset-h"><span data-icon="alert"></span> <span data-i18n="st.reset_h">Danger zone: reset demo data</span></h3>
+          </div>
+          <div class="card-body">
+            <p class="mt-0" data-i18n="st.reset_intro">Puts the portal back to the original demo story. Use it before a fresh presentation.</p>
+            <ul>
+              <li data-i18n="st.reset_1">Every FDR, release, discrepancy, notification and audit entry is deleted and generated again.</li>
+              <li data-i18n="st.reset_2">All users are recreated with the demo password, so you will be signed out.</li>
+              <li data-i18n="st.reset_3">Bank and portal signing keys are re-issued and the demo clock returns to today.</li>
+              <li data-i18n="st.reset_4">It takes up to a minute. It cannot be undone.</li>
+            </ul>
+            <div class="st-confirm">
+              <div class="field">
+                <label for="reset-word" data-i18n="st.reset_type">Type RESET to confirm</label>
+                <input class="input" id="reset-word" autocomplete="off" spellcheck="false" placeholder="RESET" aria-describedby="reset-hint">
+                <span class="hint" id="reset-hint" data-i18n="st.reset_hint">This guard stops an accidental click.</span>
+              </div>
+              <button type="button" class="btn danger" id="reset-btn" disabled><span data-icon="trash"></span> <span data-i18n="st.reset_btn">Reset demo data</span></button>
+            </div>
+            <div id="reset-result" style="margin-top:14px"></div>
+          </div>
+        </section>
+      </div>
+
+      <section class="card" aria-labelledby="keys-h">
+        <div class="card-head">
+          <h3 id="keys-h"><span data-icon="key"></span> <span data-i18n="st.keys_h">Signing key registry</span></h3>
+          <a class="btn sm secondary" id="keys-verify" href="#"><span data-icon="qr"></span> <span data-i18n="st.keys_verify">Open the public verify page</span></a>
+        </div>
+        <div class="card-body">
+          <p class="text-2 mt-0" data-i18n="st.keys_intro">Public Ed25519 keys used to check bank-signed FDR receipts, bank verification replies and portal-issued NOC letters. Anyone can verify a document against this list; only the owner holds the private key.</p>
+        </div>
+        <div class="card-body flush" id="keys"></div>
+      </section>
+    </div>
+  </main>
+  <div id="nk-footer"></div>
+  <script type="module" src="settings.js"></script>
+</body>
+</html>

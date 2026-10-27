@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Release request · Nidhi Kavach</title>
+  <meta name="description" content="Release / refund request: stage progress, SLA countdown, release checklist, actions, event history and the signed NOC.">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <script src="../assets/js/config.js"></script>
+  <style>
+    /* page layout only - colours come from theme tokens */
+    .rd-sum { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px 28px; align-items: start; }
+    .rd-sum .rd-badges { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
+    .rd-sum .rd-inst { font-size: 1.25rem; font-weight: 700; line-height: 1.3; color: var(--nk-text); }
+    .rd-sum .rd-inst a { color: inherit; }
+    .rd-sum .rd-inst-sub { color: var(--nk-muted); font-size: .88rem; margin-top: 3px; }
+    .rd-amount { text-align: right; padding: 14px 18px; border-radius: var(--nk-radius); background: var(--nk-primary-50); border: 1px solid var(--nk-primary-100); min-width: 220px; }
+    .rd-amount .l { font-size: .74rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--nk-primary-700); }
+    .rd-amount .v { font-size: 1.85rem; font-weight: 800; color: var(--nk-navy); font-variant-numeric: tabular-nums; line-height: 1.15; margin-top: 4px; }
+    .rd-amount .s { font-size: .8rem; color: var(--nk-text-2); margin-top: 4px; }
+    .rd-sum-dl { grid-column: 1 / -1; padding-top: 16px; border-top: 1px solid var(--nk-border); }
+    .rd-reason { grid-column: 1 / -1; background: var(--nk-surface-2); border: 1px solid var(--nk-border); border-left: 4px solid var(--nk-saffron); border-radius: var(--nk-radius-sm); padding: 12px 16px; }
+    .rd-reason .l { font-size: .74rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--nk-muted); margin-bottom: 4px; }
+    .rd-reason p { margin: 0; color: var(--nk-text); line-height: 1.55; }
+
+    .rd-progress-foot { display: flex; flex-wrap: wrap; gap: 10px 28px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--nk-border); }
+    #rd-stepper .step .s-meta { margin-top: 2px; font-variant-numeric: tabular-nums; }
+    #rd-stepper .step.current .s-meta { color: var(--nk-primary-700); font-weight: 600; }
+    #rd-stepper .step.bad .s-label { color: var(--nk-danger); }
+
+    .rd-sla-big { font-size: 1.9rem; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; color: var(--nk-text); }
+    .rd-sla-big.ok { color: var(--nk-success); } .rd-sla-big.warn { color: var(--nk-warning); } .rd-sla-big.bad { color: var(--nk-danger); }
+    .rd-sla-cap { font-size: .82rem; color: var(--nk-muted); margin-top: 4px; }
+    .rd-sla .meter { margin-top: 14px; }
+    .rd-sla-rows { margin-top: 14px; }
+
+    .rd-next { font-size: .9rem; color: var(--nk-text-2); line-height: 1.55; margin: 0 0 14px; }
+    .rd-actions { display: flex; flex-direction: column; gap: 10px; }
+    .rd-actions .btn { justify-content: center; }
+
+    .rd-ck { list-style: none; margin: 0; padding: 0; }
+    .rd-ck li { display: flex; gap: 14px; align-items: flex-start; padding: 14px 18px; border-top: 1px solid var(--nk-border); }
+    .rd-ck li:first-child { border-top: 0; }
+    .rd-ck .ic { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--nk-slate-50); color: var(--nk-muted); }
+    .rd-ck li.ok .ic { background: var(--nk-success-50); color: var(--nk-success); }
+    .rd-ck li.bad .ic { background: var(--nk-danger-50); color: var(--nk-danger); }
+    .rd-ck li.pending .ic { background: var(--nk-warning-50); color: var(--nk-warning); }
+    .rd-ck .m { flex: 1; min-width: 0; }
+    .rd-ck .lbl { font-weight: 600; font-size: .92rem; color: var(--nk-text); line-height: 1.4; }
+    .rd-ck .lbl .badge { margin-left: 6px; vertical-align: 1px; }
+    .rd-ck .note { font-size: .82rem; color: var(--nk-muted); margin-top: 3px; }
+    .rd-ck .st { font-size: .8rem; font-weight: 600; white-space: nowrap; padding-top: 5px; }
+    .rd-ck li.ok .st { color: var(--nk-success); } .rd-ck li.bad .st { color: var(--nk-danger); } .rd-ck li.pending .st { color: var(--nk-warning); }
+    .rd-ck .check { padding: 6px 10px; border: 1px solid var(--nk-border-strong); border-radius: var(--nk-radius-sm); background: var(--nk-surface); white-space: nowrap; font-size: .84rem; font-weight: 600; }
+    .rd-ck li.dirty .check { border-color: var(--nk-primary); background: var(--nk-primary-50); }
+    .rd-ck-foot { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .rd-ck-foot .input { flex: 1 1 240px; min-width: 0; }
+    .rd-ck-alert { margin: 14px 18px 0; }
+
+    .rd-tl-body { margin-top: 6px; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+    .rd-tl-note { background: var(--nk-surface-2); border: 1px solid var(--nk-border); border-radius: var(--nk-radius-sm); padding: 8px 12px; font-size: .86rem; color: var(--nk-text); line-height: 1.5; max-width: 100%; overflow-wrap: anywhere; }
+    .rd-tl-title { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .rd-tl-title .arrow { color: var(--nk-muted); display: inline-flex; }
+
+    .rd-noc-meta { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .rd-noc-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    @media (max-width: 900px) {
+      /* one column: put the next step and the SLA timer before the long checklist and history */
+      .rd-grid .rd-col { display: contents; }
+      #rd-noc-card { order: 0; } .rd-o-act { order: 1; } .rd-o-sla { order: 2; } .rd-o-ck { order: 3; } .rd-o-tl { order: 4; } .rd-o-fdr { order: 5; }
+      .rd-sum { grid-template-columns: minmax(0, 1fr); }
+      .rd-amount { text-align: left; min-width: 0; }
+    }
+    @media (max-width: 600px) {
+      #rd-stepper .stepper { overflow-x: visible; }
+      #rd-stepper .step { min-width: 0; }
+      #rd-stepper .step .s-label { font-size: .68rem; overflow-wrap: anywhere; padding: 0 2px; }
+      #rd-stepper .step .s-meta { font-size: .64rem; }
+      #rd-stepper .step .s-circle { width: 28px; height: 28px; }
+      #rd-stepper .step::before { top: 13px; }
+      .rd-ck li { flex-wrap: wrap; padding: 12px 14px; }
+      .rd-ck .ctl { flex-basis: 100%; padding-left: 44px; }
+      .rd-amount .v { font-size: 1.55rem; }
+      .rd-noc-btns, .rd-noc-btns .btn { width: 100%; }
+      .rd-noc-btns .btn { justify-content: center; }
+    }
+  </style>
+</head>
+<body data-page="officer-release">
+  <header id="nk-header"></header>
+  <div id="nk-pagehead"></div>
+  <main id="main" class="nk-main">
+    <div class="nk-container">
+      <div id="rd-state"></div>
+      <div id="rd-content" class="stack lg" hidden>
+
+        <section class="card accent-top" aria-labelledby="rd-inst-name">
+          <div class="card-body"><div class="rd-sum" id="rd-summary"></div></div>
+        </section>
+
+        <section class="card" aria-labelledby="rd-progress-h">
+          <div class="card-head">
+            <h2 id="rd-progress-h"><span data-icon="git-branch"></span><span data-i18n="rd.progress">Progress</span></h2>
+            <span class="sub" data-i18n="rd.progress_sub">Time spent at each stage of the release workflow</span>
+          </div>
+          <div class="card-body">
+            <div id="rd-stepper"></div>
+            <div class="rd-progress-foot" id="rd-progress-foot"></div>
+          </div>
+        </section>
+
+        <div class="grid g-2-1 rd-grid">
+          <div class="stack lg rd-col">
+            <section class="card accent-green" id="rd-noc-card" aria-labelledby="rd-noc-h" hidden>
+              <div class="card-head">
+                <h2 id="rd-noc-h"><span data-icon="stamp"></span><span data-i18n="rd.noc_title">No-objection certificate (NOC)</span></h2>
+                <span class="sub" data-i18n="rd.noc_sub">Portal-signed letter with a verifiable QR code</span>
+              </div>
+              <div class="card-body" id="rd-noc"></div>
+            </section>
+
+            <section class="card rd-o-ck" aria-labelledby="rd-ck-h">
+              <div class="card-head">
+                <h2 id="rd-ck-h"><span data-icon="file-check"></span><span data-i18n="rd.ck_title">Release checklist</span></h2>
+                <span class="sub" id="rd-ck-sub"></span>
+              </div>
+              <div class="card-body flush" id="rd-checklist"></div>
+              <div class="card-foot" id="rd-ck-foot" hidden></div>
+            </section>
+
+            <section class="card rd-o-tl" aria-labelledby="rd-tl-h">
+              <div class="card-head">
+                <h2 id="rd-tl-h"><span data-icon="history"></span><span data-i18n="rd.tl_title">Event history</span></h2>
+                <span class="sub" data-i18n="rd.tl_sub">Newest first · time spent in the previous stage</span>
+              </div>
+              <div class="card-body" id="rd-timeline"></div>
+            </section>
+          </div>
+
+          <div class="stack lg rd-col">
+            <section class="card accent-saffron rd-o-act" aria-labelledby="rd-act-h">
+              <div class="card-head">
+                <h2 id="rd-act-h"><span data-icon="zap"></span><span data-i18n="rd.act_title">Next step</span></h2>
+              </div>
+              <div class="card-body" id="rd-actions"></div>
+            </section>
+
+            <section class="card rd-sla rd-o-sla" aria-labelledby="rd-sla-h">
+              <div class="card-head">
+                <h2 id="rd-sla-h"><span data-icon="clock"></span><span data-i18n="rd.sla_title">Service-level timer</span></h2>
+              </div>
+              <div class="card-body" id="rd-sla" aria-live="polite"></div>
+            </section>
+
+            <section class="card rd-o-fdr" aria-labelledby="rd-fdr-h">
+              <div class="card-head">
+                <h2 id="rd-fdr-h"><span data-icon="shield-check"></span><span data-i18n="rd.fdr_title">Security deposit (FDR)</span></h2>
+              </div>
+              <div class="card-body" id="rd-fdr"></div>
+            </section>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+  <div id="nk-footer"></div>
+  <script type="module" src="release.js"></script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Release &amp; refund requests · Nidhi Kavach</title>
+  <meta name="description" content="Release, refund and discharge requests for security deposits: pipeline board, SLA tracking and stage turnaround.">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <script src="../assets/js/config.js"></script>
+  <style>
+    /* page layout only - colours come from theme tokens */
+    .rl-kpis > .kpi { min-height: 112px; }
+    .rl-toolbar .card-body { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; padding: 12px 16px; }
+    .rl-toolbar .rl-filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; flex: 1 1 420px; justify-content: flex-end; min-width: 0; }
+    .rl-toolbar .rl-search { flex: 1 1 260px; max-width: 420px; min-width: 0; }
+    .rl-toolbar .rl-status { width: auto; min-width: 190px; }
+    .rl-view .btn { min-width: 104px; }
+
+    .rl-board { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; align-items: start; }
+    .rl-col { background: var(--nk-surface-2); border: 1px solid var(--nk-border); border-radius: var(--nk-radius); min-width: 0; display: flex; flex-direction: column; }
+    .rl-col-head { padding: 12px 14px 10px; border-bottom: 1px solid var(--nk-border); border-top: 4px solid var(--rl-c, var(--nk-primary)); border-radius: var(--nk-radius) var(--nk-radius) 0 0; background: var(--nk-surface); display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .rl-col-head .t { font-weight: 700; font-size: .95rem; color: var(--nk-text); }
+    .rl-col-head .s { font-size: .75rem; color: var(--nk-muted); margin-top: 2px; }
+    .rl-col-head .n { min-width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; font-weight: 800; font-size: 1.05rem; background: var(--nk-primary-50); color: var(--rl-c, var(--nk-primary)); font-variant-numeric: tabular-nums; }
+    .rl-col-body { padding: 10px; display: flex; flex-direction: column; gap: 10px; min-height: 120px; }
+    .rl-col.c-SUBMITTED { --rl-c: var(--nk-info); }
+    .rl-col.c-SCRUTINY { --rl-c: var(--nk-violet); }
+    .rl-col.c-RECOMMENDED { --rl-c: var(--nk-primary); }
+    .rl-col.c-APPROVED { --rl-c: var(--nk-teal); }
+    .rl-col.c-RETURNED { --rl-c: var(--nk-warning); }
+    .rl-col-empty { border: 1.5px dashed var(--nk-border-strong); border-radius: 8px; padding: 22px 10px; text-align: center; color: var(--nk-muted); font-size: .82rem; background: var(--nk-surface); }
+
+    a.rl-card { display: block; background: var(--nk-surface); border: 1px solid var(--nk-border); border-radius: 8px; padding: 11px 12px; color: inherit; box-shadow: var(--nk-shadow-1); transition: box-shadow .15s, border-color .15s, transform .15s; }
+    a.rl-card:hover { text-decoration: none; box-shadow: var(--nk-shadow-2); border-color: var(--nk-border-strong); transform: translateY(-1px); }
+    a.rl-card.breached { box-shadow: inset 3px 0 0 var(--nk-danger), var(--nk-shadow-1); border-color: var(--nk-danger-50); }
+    .rl-card .ref { font-family: var(--nk-mono); font-size: .78rem; color: var(--nk-primary-700); font-weight: 600; }
+    .rl-card .inst { font-weight: 600; font-size: .9rem; color: var(--nk-text); margin-top: 6px; line-height: 1.3; }
+    .rl-card .loc { font-size: .76rem; color: var(--nk-muted); }
+    .rl-card .amt { font-weight: 700; font-size: 1.02rem; font-variant-numeric: tabular-nums; color: var(--nk-text); }
+    .rl-card .mid { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-top: 8px; }
+    .rl-card .foot { display: flex; justify-content: space-between; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 9px; padding-top: 8px; border-top: 1px solid var(--nk-border); font-size: .76rem; color: var(--nk-text-2); }
+    .rl-card .foot .icon { color: var(--nk-muted); }
+    .rl-board-note { margin-top: 12px; }
+
+    .rl-stages { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; }
+    .rl-stage { padding: 14px 16px; border-right: 1px solid var(--nk-border); min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+    .rl-stage:last-child { border-right: 0; }
+    .rl-stage.bottleneck { background: var(--nk-saffron-50); }
+    .rl-stage .v { font-size: 1.45rem; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+    .rl-stage .v small { font-size: .78rem; font-weight: 600; color: var(--nk-muted); margin-left: 3px; }
+    .rl-stage .l { font-size: .78rem; color: var(--nk-muted); }
+
+    .rl-tablecard .card-head { padding: 12px 16px; }
+    .rl-tablecard td .mono { white-space: nowrap; }
+    .rl-inline-sla { display: flex; flex-direction: column; gap: 3px; align-items: flex-start; }
+
+    @media (max-width: 1200px) {
+      .rl-board { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .rl-stages { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .rl-stage { border-bottom: 1px solid var(--nk-border); }
+    }
+    @media (max-width: 1100px) {
+      .rl-kpis > .kpi:last-child { grid-column: 1 / -1; }
+    }
+    @media (max-width: 760px) {
+      .rl-board { grid-template-columns: minmax(0, 1fr); }
+      .rl-stages { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .rl-toolbar .rl-filters { justify-content: stretch; flex-basis: 100%; }
+      .rl-toolbar .rl-search { max-width: none; flex-basis: 100%; }
+      .rl-toolbar .rl-status { flex: 1 1 auto; min-width: 0; }
+      .rl-view { width: 100%; }
+      .rl-view .btn { flex: 1; min-width: 0; }
+      .rl-col-body { min-height: 0; }
+    }
+  </style>
+</head>
+<body data-page="officer-releases">
+  <header id="nk-header"></header>
+  <div id="nk-pagehead"></div>
+  <main id="main" class="nk-main">
+    <div class="nk-container stack lg">
+
+      <section aria-labelledby="rl-kpi-h">
+        <h2 id="rl-kpi-h" class="sr-only" data-i18n="rlist.kpi_heading">Summary</h2>
+        <div class="grid g-5 rl-kpis" id="rl-kpis"></div>
+      </section>
+
+      <section class="card rl-toolbar" aria-label="View and filters">
+        <div class="card-body">
+          <div class="btn-group rl-view" role="group" aria-label="View" data-i18n-aria="rlist.view">
+            <button class="btn sm secondary" type="button" data-view="board" aria-pressed="false"><span data-icon="layers"></span><span data-i18n="rlist.board">Board</span></button>
+            <button class="btn sm secondary" type="button" data-view="table" aria-pressed="false"><span data-icon="list"></span><span data-i18n="rlist.table">Table</span></button>
+          </div>
+          <div class="rl-filters">
+            <div class="input-icon rl-search">
+              <span data-icon="search"></span>
+              <label for="rl-q" class="sr-only" data-i18n="common.search">Search</label>
+              <input id="rl-q" class="input sm" type="search" autocomplete="off" placeholder="Search by reference, institution, FDR number or AICTE ID" data-i18n-placeholder="rlist.search_ph">
+            </div>
+            <label for="rl-status" class="sr-only" data-i18n="f.status">Status</label>
+            <select id="rl-status" class="select sm rl-status"></select>
+            <label class="check small" id="rl-breached-wrap"><input type="checkbox" id="rl-breached"> <span data-i18n="rlist.breached_only">SLA breached only</span></label>
+          </div>
+        </div>
+      </section>
+
+      <section id="rl-view-board" aria-label="Pipeline board">
+        <div id="rl-board"></div>
+        <div id="rl-board-note" class="rl-board-note"></div>
+      </section>
+
+      <section id="rl-view-table" class="card rl-tablecard" aria-label="All requests" hidden>
+        <div class="card-head">
+          <h2><span data-icon="list"></span><span data-i18n="rlist.all_requests">All requests</span></h2>
+          <span class="sub" id="rl-table-sub"></span>
+        </div>
+        <div class="card-body flush" id="rl-table"></div>
+        <div id="rl-pager"></div>
+      </section>
+
+      <section class="card" aria-labelledby="rl-stage-h">
+        <div class="card-head">
+          <h2 id="rl-stage-h"><span data-icon="hourglass"></span><span data-i18n="rlist.stage_title">Time spent per stage</span></h2>
+          <div class="row">
+            <span class="sub" data-i18n="rlist.stage_sub">Average of completed stays vs the service-level limit</span>
+            <a class="btn sm ghost" id="rl-analytics-link" href="analytics.html"><span data-i18n="nav.analytics">Analytics</span><span data-icon="arrow-right"></span></a>
+          </div>
+        </div>
+        <div class="card-body flush" id="rl-stages"></div>
+      </section>
+
+    </div>
+  </main>
+  <div id="nk-footer"></div>
+  <script type="module" src="releases.js"></script>
+</body>
+</html>

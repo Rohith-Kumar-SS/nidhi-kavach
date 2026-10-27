@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Analytics · Nidhi Kavach</title>
+  <meta name="description" content="Release workflow bottlenecks, measured improvement over the manual process, and deposits by state and bank">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/vendor/chart.umd.min.js"></script>
+  <style>
+    /* page layout only - colours come from theme tokens */
+    .an-kpis { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; }
+    .an-kpis .kpi .k-value { font-size: 1.75rem; }
+    .an-kpis .k-unit { font-size: .95rem; font-weight: 600; color: var(--nk-text-2); margin-left: 3px; }
+    a.kpi, a.kpi:hover { color: inherit; text-decoration: none; }
+    a.kpi .k-go { margin-top: auto; padding-top: 6px; font-size: .78rem; font-weight: 600; color: var(--nk-link); display: inline-flex; align-items: center; gap: 4px; }
+
+    .an-grid-32 { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 18px; align-items: start; }
+    .an-grid-2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: stretch; }
+    .an-grid-32 > .stack { gap: 18px; }
+    .an-bank-name { font-weight: 600; white-space: nowrap; }
+    td .nowrap, .an-nowrap { white-space: nowrap; }
+    .an-sec-title { display: flex; align-items: center; gap: 10px; }
+    .an-sec-title .feature-icon { width: 36px; height: 36px; }
+
+    .an-stage { display: flex; flex-direction: column; gap: 3px; }
+    .an-stage .cell-sub { font-size: .74rem; }
+    .an-load { display: flex; align-items: center; gap: 8px; min-width: 96px; }
+    .an-load .meter { flex: 1; height: 7px; }
+    .an-load .num { font-size: .8rem; font-weight: 600; min-width: 38px; text-align: right; }
+    .an-bottleneck td { background: var(--nk-warning-50); }
+
+    .an-stuck .list-item { padding: 12px 16px; }
+    .an-stuck a.list-item { color: inherit; }
+    .an-stuck a.list-item:hover { background: var(--nk-surface-2); text-decoration: none; }
+    .an-stuck a.list-item:hover .li-title { color: var(--nk-primary); }
+    .an-stuck .li-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 5px; font-size: .78rem; color: var(--nk-muted); }
+    .an-stuck .li-amt { text-align: right; white-space: nowrap; font-weight: 700; font-variant-numeric: tabular-nums; align-self: center; }
+    .an-stuck .li-amt .cell-sub { font-weight: 600; color: var(--nk-danger); }
+
+    .an-imp { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 3fr) minmax(0, 1.4fr); gap: 18px 24px; align-items: center; padding: 18px 20px; border-top: 1px solid var(--nk-border); }
+    .an-imp:first-child { border-top: 0; }
+    .an-imp .i-label { font-weight: 700; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
+    .an-imp .i-explain { margin-top: 5px; font-size: .86rem; color: var(--nk-text-2); line-height: 1.5; }
+    .an-imp .i-chip { text-align: right; }
+    .an-imp .i-chip .badge { font-size: .86rem; padding: 5px 11px; }
+    .an-imp .i-chip .small { display: block; margin-top: 4px; }
+    .an-pair { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 6px 10px; align-items: center; font-size: .8rem; }
+    .an-pair .p-lbl { color: var(--nk-muted); font-weight: 600; }
+    .an-pair .p-track { height: 12px; border-radius: 999px; background: var(--nk-surface-2); overflow: hidden; }
+    .an-pair .p-bar { display: block; height: 100%; border-radius: 999px; min-width: 3px; }
+    .an-pair .p-before { background: var(--nk-border-strong); }
+    .an-pair .p-after { background: var(--nk-success); }
+    .an-pair .p-val { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+    .an-pair .p-val.before { color: var(--nk-text-2); font-weight: 600; }
+
+    .an-gap-cell { display: flex; flex-direction: column; align-items: flex-end; }
+    .an-gap-cell .cell-sub { font-size: .74rem; }
+    .an-meter-cell { display: flex; align-items: center; gap: 8px; min-width: 96px; }
+    .an-meter-cell .meter { flex: 1; height: 8px; }
+    .an-meter-cell .num { font-size: .8rem; font-weight: 600; min-width: 44px; text-align: right; }
+    .an-total td { font-weight: 700; background: var(--nk-surface-2); }
+    .an-print-meta { display: none; }
+    .sk-line { height: 14px; margin-bottom: 10px; }
+    .sk-block { border-radius: var(--nk-radius); }
+
+    @media (max-width: 1100px) {
+      .an-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .an-grid-32, .an-grid-2 { grid-template-columns: minmax(0, 1fr); }
+    }
+    @media (max-width: 760px) {
+      .an-imp { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+      .an-imp .i-chip { text-align: left; }
+    }
+    @media (max-width: 640px) {
+      .section-title { flex-direction: column; align-items: flex-start; gap: 4px; }
+      .an-sec-title { font-size: 1.25rem; }
+      .an-sec-title .feature-icon { width: 30px; height: 30px; }
+      .an-imp .i-chip { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; }
+      .an-imp .i-chip .small { margin-top: 0; }
+      .an-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      .an-kpis > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+      .an-kpis .kpi .k-value { font-size: 1.4rem; }
+    }
+    @media print {
+      .an-print-meta { display: block; margin-bottom: 8px; font-size: .85rem; color: var(--nk-text-2); }
+      .an-kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+      .an-grid-32, .an-grid-2 { grid-template-columns: minmax(0, 1fr); }
+      .an-imp { grid-template-columns: minmax(0, 5fr) minmax(0, 3fr) minmax(0, 1.4fr); break-inside: avoid; }
+      .chart-box { height: 230px; }
+      .table-wrap { overflow: visible; }
+      .an-stuck a.list-item .li-go, .k-go { display: none !important; }
+      section { break-inside: auto; }
+    }
+  </style>
+</head>
+<body data-page="officer-analytics">
+  <header id="nk-header"></header>
+  <div id="nk-pagehead"></div>
+  <main id="main" class="nk-main">
+    <div class="nk-container stack lg">
+      <div class="an-print-meta" id="print-meta"></div>
+
+      <!-- release workflow -->
+      <section aria-labelledby="an-rel-h" class="stack">
+        <div class="section-title">
+          <h2 id="an-rel-h" class="an-sec-title"><span class="feature-icon" data-icon="hourglass"></span><span data-i18n="an.sec_release">Release workflow bottleneck</span></h2>
+          <span class="muted small" data-i18n="an.sec_release_hint">Time each release or refund request spends at every stage, against the stage time limit</span>
+        </div>
+        <div id="rel-kpis" class="an-kpis"></div>
+        <div class="an-grid-2">
+          <div class="card">
+            <div class="card-head">
+              <h3><span data-icon="chart"></span><span data-i18n="an.stage_chart">Average time per stage vs time limit</span></h3>
+              <span class="sub" data-i18n="an.hours">Hours</span>
+            </div>
+            <div class="card-body" id="rel-chart"></div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h3><span data-icon="list"></span><span data-i18n="an.stage_table">Stage by stage</span></h3>
+              <span class="sub" data-i18n="an.stage_table_sub">Load = average time as a share of the time limit</span>
+            </div>
+            <div class="card-body flush" id="rel-table"></div>
+          </div>
+        </div>
+        <div class="an-grid-2">
+          <div class="card an-stuck">
+            <div class="card-head">
+              <h3><span data-icon="alert"></span><span data-i18n="an.stuck_title">Requests past their time limit</span></h3>
+              <a class="small" id="rel-desk" href="#" data-i18n="an.rel_desk">Open release desk</a>
+            </div>
+            <div id="rel-stuck" class="list-divided"></div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h3><span data-icon="trend"></span><span data-i18n="an.monthly_title">Requested vs released each month</span></h3>
+              <span class="sub" data-i18n="an.monthly_sub">Last 12 months</span>
+            </div>
+            <div class="card-body" id="rel-monthly"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- measured improvement -->
+      <section id="impact" aria-labelledby="an-imp-h" class="stack">
+        <div class="section-title">
+          <h2 id="an-imp-h" class="an-sec-title"><span class="feature-icon saffron" data-icon="trend"></span><span data-i18n="an.sec_impact">Measured improvement vs manual process</span></h2>
+          <span class="muted small" id="imp-generated"></span>
+        </div>
+        <div class="card accent-green">
+          <div class="card-body flush" id="imp-list"></div>
+        </div>
+      </section>
+
+      <!-- coverage by state / bank -->
+      <section id="by-state" aria-labelledby="an-geo-h" class="stack">
+        <div class="section-title">
+          <h2 id="an-geo-h" class="an-sec-title"><span class="feature-icon" data-icon="map"></span><span data-i18n="an.sec_geo">Deposits by state and bank</span></h2>
+          <span class="muted small" data-i18n="an.sec_geo_hint">Held deposits (active and release requested). Select a row to open the instruments.</span>
+        </div>
+        <div class="an-grid-32">
+          <div class="card">
+            <div class="card-head">
+              <h3><span data-icon="map"></span><span data-i18n="an.state_title">By state</span></h3>
+              <span class="sub" id="state-sub"></span>
+            </div>
+            <div class="card-body flush" id="state-table"></div>
+          </div>
+          <div class="stack">
+            <div class="card" id="by-bank">
+              <div class="card-head">
+                <h3><span data-icon="bank"></span><span data-i18n="an.bank_title">By bank</span></h3>
+                <span class="sub" data-i18n="an.bank_sub">Share of amount held</span>
+              </div>
+              <div class="card-body" id="bank-chart"></div>
+              <div class="card-body flush" id="bank-table"></div>
+            </div>
+            <div class="card accent-danger">
+              <div class="card-head">
+                <h3><span data-icon="shield-alert"></span><span data-i18n="an.gapchart_title">Where the protection gap is</span></h3>
+                <span class="sub" data-i18n="an.gapchart_sub">Top states by unprotected amount</span>
+              </div>
+              <div class="card-body" id="gap-chart"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+  <div id="nk-footer"></div>
+  <script type="module" src="analytics.js"></script>
+</body>
+</html>

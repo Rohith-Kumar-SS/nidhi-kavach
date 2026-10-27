@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Institutions · Nidhi Kavach</title>
+  <meta name="description" content="Security-deposit coverage of every institution: required vs covered, shortfalls, discrepancies and risk">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <script src="../assets/js/config.js"></script>
+  <style>
+    .inst-filters { display: grid; grid-template-columns: minmax(0, 2.2fr) repeat(3, minmax(0, 1fr)) auto; gap: 12px 14px; align-items: end; }
+    .inst-filters .f-actions { display: flex; gap: 10px; align-items: center; height: 38px; white-space: nowrap; }
+    .inst-cov { min-width: 130px; }
+    .inst-cov .meter { height: 8px; margin-top: 4px; }
+    .inst-cov .pct { font-weight: 700; font-size: .84rem; font-variant-numeric: tabular-nums; }
+    .inst-short { font-weight: 700; color: var(--nk-danger); white-space: nowrap; }
+    .inst-ok { color: var(--nk-success); font-weight: 600; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+    .inst-name { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .inst-count { display: inline-grid; place-items: center; min-width: 26px; height: 24px; padding: 0 7px; border-radius: 999px; font-weight: 700; font-size: .8rem; }
+    .inst-count.zero { color: var(--nk-muted); }
+    .inst-count.some { background: var(--nk-orange-50); color: var(--nk-orange); border: 1px solid var(--nk-orange-50); }
+    .inst-legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: .8rem; color: var(--nk-muted); }
+    .inst-legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .inst-legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+    .inst-table td { vertical-align: middle; }
+    @media (max-width: 1100px) { .inst-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); } .inst-filters .f-search { grid-column: 1 / -1; } }
+    @media (max-width: 640px) { .inst-filters { grid-template-columns: minmax(0, 1fr); } .inst-filters .f-actions { height: auto; justify-content: space-between; } }
+  </style>
+</head>
+<body data-page="officer-institutions">
+  <header id="nk-header"></header>
+  <div id="nk-pagehead"></div>
+  <main id="main" class="nk-main">
+    <div class="nk-container">
+      <section class="section" aria-labelledby="inst-summary-h">
+        <h2 id="inst-summary-h" class="sr-only" data-i18n="inst.summary">Coverage summary</h2>
+        <div class="grid g-4" id="kpis"></div>
+      </section>
+
+      <section class="card section">
+        <div class="card-body">
+          <form class="inst-filters" id="filters" role="search" onsubmit="return false">
+            <div class="field f-search">
+              <label for="f-q" data-i18n="inst.f_search">Search institutions</label>
+              <div class="input-icon">
+                <span id="f-q-icon"></span>
+                <input class="input" id="f-q" type="search" autocomplete="off" data-i18n-placeholder="inst.f_search_ph" placeholder="Name, AICTE ID, city or trust">
+              </div>
+            </div>
+            <div class="field">
+              <label for="f-state" data-i18n="f.state">State</label>
+              <select class="select" id="f-state"></select>
+            </div>
+            <div class="field">
+              <label for="f-type" data-i18n="f.type">Type</label>
+              <select class="select" id="f-type"></select>
+            </div>
+            <div class="field">
+              <label for="f-sort" data-i18n="inst.f_sort">Sort by</label>
+              <select class="select" id="f-sort"></select>
+            </div>
+            <div class="f-actions">
+              <label class="check"><input type="checkbox" id="f-short"> <span data-i18n="inst.f_short">Shortfall only</span></label>
+              <button class="btn ghost sm" type="button" id="f-clear"></button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2 id="list-title"></h2>
+          <div class="inst-legend" id="legend"></div>
+        </div>
+        <div class="card-body flush inst-table" id="list"></div>
+        <div id="pager"></div>
+      </section>
+    </div>
+  </main>
+  <div id="nk-footer"></div>
+  <script type="module" src="institutions.js"></script>
+</body>
+</html>

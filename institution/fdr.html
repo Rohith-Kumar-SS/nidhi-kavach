@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Instrument · Nidhi Kavach</title>
+  <meta name="description" content="Status, verification and history of one fixed deposit receipt">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <script src="../assets/js/config.js"></script>
+  <style>
+    .ifdr-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); gap: 22px; align-items: start; }
+    .ifdr-amt { font-size: 2.1rem; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; color: var(--nk-navy); }
+    .ifdr-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .ifdr-bank { display: flex; gap: 12px; align-items: center; margin-top: 12px; }
+    .ifdr-ladder .rung { position: relative; }
+    .ifdr-ladder .rung .r-here { display: inline-block; margin-top: 6px; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--nk-primary-700); }
+    .ifdr-ladder-note { font-size: .86rem; color: var(--nk-text-2); margin-top: 10px; }
+    .ifdr-disc { border: 1px solid var(--nk-border); border-left: 4px solid var(--nk-danger); border-radius: var(--nk-radius-sm); padding: 14px 16px; background: var(--nk-surface); }
+    .ifdr-disc.isev-medium, .ifdr-disc.isev-low { border-left-color: var(--nk-warning); }
+    .ifdr-disc.done { border-left-color: var(--nk-success); background: var(--nk-surface-2); }
+    .ifdr-disc .d-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+    .ifdr-disc .d-title { font-weight: 700; }
+    .ifdr-disc .d-fix { margin-top: 8px; font-size: .86rem; background: var(--nk-info-50); border-radius: var(--nk-radius-sm); padding: 8px 10px; color: var(--nk-text-2); }
+    .ifdr-disc .d-resp { margin-top: 8px; font-size: .86rem; border-left: 3px solid var(--nk-border-strong); padding-left: 10px; color: var(--nk-text-2); }
+    .ifdr-disc .d-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .ifdr-docs .list-item { cursor: pointer; }
+    .ifdr-docs .list-item.sel { background: var(--nk-primary-50); }
+    .ifdr-viewer img { max-width: 100%; border: 1px solid var(--nk-border); border-radius: 8px; display: block; margin: 0 auto; }
+    .ifdr-act { display: flex; gap: 12px; align-items: flex-start; padding: 14px 0; border-top: 1px solid var(--nk-border); }
+    .ifdr-act:first-child { border-top: 0; padding-top: 0; }
+    .ifdr-act .grow { min-width: 0; }
+    .ifdr-act .a-name { font-weight: 700; }
+    .ifdr-obs { background: var(--nk-surface-2); border: 1px solid var(--nk-border); border-radius: var(--nk-radius-sm); padding: 12px 14px; }
+    .ifdr-obs + .ifdr-obs { margin-top: 10px; }
+    @media (max-width: 900px) { .ifdr-hero { grid-template-columns: minmax(0, 1fr); } }
+    @media (max-width: 640px) { .ifdr-ladder.trust-ladder { flex-direction: column; } .ifdr-amt { font-size: 1.7rem; } }
+  </style>
+</head>
+<body data-page="institution-fdr">
+  <header id="nk-header"></header>
+  <div id="nk-pagehead"></div>
+  <main id="main" class="nk-main">
+    <div class="nk-container stack lg" id="root">
+      <div class="card"><div class="loading"><span class="spinner"></span><span data-i18n="common.loading">Loading…</span></div></div>
+    </div>
+  </main>
+  <div id="nk-footer"></div>
+  <script type="module" src="fdr.js"></script>
+</body>
+</html>

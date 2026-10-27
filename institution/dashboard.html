@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Institution dashboard · Nidhi Kavach</title>
+  <meta name="description" content="Security deposit coverage, renewals, release requests and alerts for your institution">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <script src="../assets/js/config.js"></script>
+  <style>
+    .idash-cov-figs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .idash-cov-figs .fig { background: var(--nk-surface-2); border: 1px solid var(--nk-border); border-radius: var(--nk-radius-sm); padding: 10px 12px; min-width: 0; }
+    .idash-cov-figs .fig .l { font-size: .74rem; color: var(--nk-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+    .idash-cov-figs .fig .v { font-size: 1.3rem; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 2px; }
+    .idash-cov-figs .fig.bad .v { color: var(--nk-danger); }
+    .idash-cov-figs .fig.good .v { color: var(--nk-success); }
+    .idash-pct { font-size: 2.1rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+    .idash-facts { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: .84rem; color: var(--nk-text-2); }
+    .idash-facts span { display: inline-flex; align-items: center; gap: 6px; }
+    .idash-buckets { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 12px; }
+    .idash-buckets .kpi .k-value { font-size: 1.55rem; }
+    .idash-action .li-title { font-weight: 600; }
+    .idash-action .kind { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 2px; }
+    .idash-action .kind.critical { color: var(--nk-danger); }
+    .idash-action .kind.high { color: var(--nk-orange); }
+    .idash-action .kind.medium { color: var(--nk-warning); }
+    .idash-action .kind.low { color: var(--nk-info); }
+    .idash-allclear { display: flex; gap: 14px; align-items: center; padding: 22px 18px; }
+    .idash-trust .rung .r-count { font-size: 1.5rem; font-weight: 800; color: var(--nk-text); font-variant-numeric: tabular-nums; margin: 4px 0 2px; }
+    .idash-up .t-title { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+    .idash-up .t-actions { margin-top: 6px; display: flex; gap: 6px; flex-wrap: wrap; }
+    @media (max-width: 1100px) { .idash-buckets { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+    @media (max-width: 640px) {
+      .idash-buckets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .idash-cov-figs { grid-template-columns: minmax(0, 1fr); }
+      .idash-trust.trust-ladder { flex-direction: column; }
+    }
+  </style>
+</head>
+<body data-page="institution-dashboard">
+  <header id="nk-header"></header>
+  <div id="nk-pagehead"></div>
+  <main id="main" class="nk-main">
+    <div class="nk-container stack lg" id="root">
+      <div class="card"><div class="loading"><span class="spinner"></span><span data-i18n="common.loading">Loading…</span></div></div>
+    </div>
+  </main>
+  <div id="nk-footer"></div>
+  <script type="module" src="dashboard.js"></script>
+</body>
+</html>

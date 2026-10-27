@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reports · Nidhi Kavach</title>
+  <meta name="description" content="Ready-made registers on FDRs, maturities, discrepancies, releases and institution coverage - preview, CSV and print">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <script src="../assets/js/config.js"></script>
+  <style>
+    .rep-card { display: flex; flex-direction: column; height: 100%; transition: border-color .15s, box-shadow .15s; }
+    .rep-card .card-body { display: flex; gap: 14px; align-items: flex-start; flex: 1; }
+    .rep-card h3 { margin: 0 0 4px; font-size: 1rem; line-height: 1.3; }
+    .rep-card p { margin: 0; color: var(--nk-text-2); font-size: .86rem; line-height: 1.45; }
+    .rep-card .card-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+    .rep-card.current { border-color: var(--nk-primary); box-shadow: 0 0 0 2px var(--nk-primary-100), var(--nk-shadow-2); }
+    .rep-count { font-size: .8rem; color: var(--nk-muted); min-height: 1.2em; }
+    .rep-count strong { color: var(--nk-text); font-variant-numeric: tabular-nums; }
+    .rep-toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .rep-meta { display: flex; gap: 18px; flex-wrap: wrap; font-size: .84rem; color: var(--nk-muted); margin-top: 10px; }
+    .rep-meta span { display: inline-flex; align-items: center; gap: 6px; }
+    .rep-cov { min-width: 110px; } .rep-cov .meter { height: 7px; margin-top: 3px; }
+    .rep-list { margin: 0; padding-left: 16px; font-size: .84rem; } .rep-list li + li { margin-top: 2px; }
+    .rep-text { min-width: 240px; max-width: 420px; font-size: .86rem; line-height: 1.4; }
+    .rep-inst { display: inline-block; min-width: 170px; }
+    .rep-print-head { display: none; }
+    @media print {
+      #report-grid, .rep-toolbar, #rep-pager, #rep-intro, .nk-pagehead { display: none !important; }
+      .rep-print-head { display: block; margin-bottom: 12px; border-bottom: 2px solid var(--nk-navy); padding-bottom: 8px; }
+      .rep-print-head .p1 { font-weight: 800; font-size: 1.1rem; color: var(--nk-navy); }
+      #preview { box-shadow: none !important; border: 0 !important; }
+      #preview .table-wrap { overflow: visible !important; }
+      #preview .table { font-size: 10.5px; }
+    }
+  </style>
+</head>
+<body data-page="officer-reports">
+  <header id="nk-header"></header>
+  <div id="nk-pagehead"></div>
+  <main id="main" class="nk-main">
+    <div class="nk-container">
+      <div class="section-title" id="rep-intro">
+        <h2 id="grid-h"></h2>
+        <span class="muted small" id="grid-sub"></span>
+      </div>
+      <section class="grid g-3 section" id="report-grid" aria-labelledby="grid-h"></section>
+      <section class="card" id="preview" hidden aria-live="polite" tabindex="-1"></section>
+    </div>
+  </main>
+  <div id="nk-footer"></div>
+  <script type="module" src="reports.js"></script>
+</body>
+</html>

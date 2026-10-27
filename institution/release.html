@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Release request · Nidhi Kavach</title>
+  <meta name="description" content="Progress, checklist and history of your release, refund or discharge request">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <script src="../assets/js/config.js"></script>
+  <style>
+    .irel-ck { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+    .irel-ck li { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 12px; align-items: start; padding: 10px 12px; border: 1px solid var(--nk-border); border-radius: var(--nk-radius); background: var(--nk-surface); }
+    .irel-ck .ic { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--nk-slate-50); color: var(--nk-muted); }
+    .irel-ck li.ok { background: var(--nk-success-50); }
+    .irel-ck li.ok .ic { background: var(--nk-success); color: #fff; }
+    .irel-ck li.bad { background: var(--nk-danger-50); }
+    .irel-ck li.bad .ic { background: var(--nk-danger); color: #fff; }
+    .irel-ck .lbl { font-weight: 600; display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; }
+    .irel-ck .note { font-size: .86rem; color: var(--nk-text-2); margin-top: 2px; overflow-wrap: anywhere; }
+    .irel-ck .st { font-size: .82rem; font-weight: 600; color: var(--nk-text-2); white-space: nowrap; }
+    .irel-ck li.ok .st { color: var(--nk-success); }
+    .irel-ck li.bad .st { color: var(--nk-danger); }
+    .irel-sla-big { font-size: 1.9rem; font-weight: 700; line-height: 1.15; }
+    .irel-sla-big.ok { color: var(--nk-success); }
+    .irel-sla-big.warn { color: var(--nk-warning); }
+    .irel-sla-big.bad { color: var(--nk-danger); }
+    .irel-sla-cap { color: var(--nk-text-2); font-size: .88rem; }
+    .irel-tl-title { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
+    .irel-note { white-space: pre-wrap; overflow-wrap: anywhere; }
+    .irel-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+    @media (max-width: 560px) { .irel-ck li { grid-template-columns: 30px minmax(0, 1fr); } .irel-ck .st { grid-column: 2; } }
+  </style>
+</head>
+<body data-page="institution-release">
+  <header id="nk-header"></header>
+  <div id="nk-pagehead"></div>
+  <main id="main" class="nk-main">
+    <div class="nk-container stack lg">
+      <div id="state"></div>
+      <div id="content" class="stack lg" hidden>
+        <section class="card" aria-labelledby="sum-h">
+          <div class="card-head">
+            <h2 id="sum-h" data-i18n="irel.d.summary">Request details</h2>
+            <span id="sum-badge"></span>
+          </div>
+          <div class="card-body stack" id="summary"></div>
+        </section>
+        <div class="grid g-2-1">
+          <div class="stack lg">
+            <section class="card" aria-labelledby="prog-h">
+              <div class="card-head"><h2 id="prog-h" data-i18n="irel.d.progress">Progress</h2></div>
+              <div class="card-body stack">
+                <div id="stepper"></div>
+                <div class="row" id="progress-foot" style="gap:24px"></div>
+              </div>
+            </section>
+            <section class="card" aria-labelledby="ck-h">
+              <div class="card-head">
+                <h2 id="ck-h" data-i18n="irel.d.checklist">Eligibility checklist</h2>
+                <span class="sub" id="ck-sub"></span>
+              </div>
+              <div class="card-body" id="checklist"></div>
+            </section>
+            <section class="card" aria-labelledby="tl-h">
+              <div class="card-head"><h2 id="tl-h" data-i18n="irel.d.history">History</h2></div>
+              <div class="card-body" id="timeline"></div>
+            </section>
+          </div>
+          <div class="stack lg">
+            <section class="card" id="action-card" aria-labelledby="act-h" hidden>
+              <div class="card-head"><h2 id="act-h"></h2></div>
+              <div class="card-body stack" id="action"></div>
+            </section>
+            <section class="card" aria-labelledby="sla-h">
+              <div class="card-head"><h2 id="sla-h" data-i18n="irel.d.sla">Time limit</h2></div>
+              <div class="card-body stack" id="sla"></div>
+            </section>
+            <section class="card" aria-labelledby="fdr-h">
+              <div class="card-head"><h2 id="fdr-h" data-i18n="irel.d.fdr">Linked deposit</h2></div>
+              <div class="card-body stack" id="fdr"></div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <div id="nk-footer"></div>
+  <script type="module" src="release.js"></script>
+</body>
+</html>

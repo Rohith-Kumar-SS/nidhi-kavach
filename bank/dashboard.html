@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bank dashboard · Nidhi Kavach</title>
+  <meta name="description" content="Mock bank portal: signing key, deposit ledger summary and AICTE verification requests">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/vendor/chart.umd.min.js"></script>
+  <style>
+    .bk-sim { margin-bottom: 18px; }
+    .bk-id-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .bk-id-head .feature-icon { width: 54px; height: 54px; border-radius: 14px; }
+    .bk-id-head h2 { margin: 0; font-size: 1.25rem; }
+    .bk-id-head .bk-id-sub { color: var(--nk-muted); font-size: .85rem; margin-top: 2px; }
+    .bk-keybox { display: flex; gap: 10px; align-items: flex-start; background: var(--nk-surface-2); border: 1px solid var(--nk-border); border-radius: var(--nk-radius-sm); padding: 10px 12px; }
+    .bk-keybox .mono { word-break: break-all; color: var(--nk-text); flex: 1 1 auto; min-width: 0; line-height: 1.5; }
+    .bk-fp { font-family: var(--nk-mono); font-weight: 700; letter-spacing: .06em; color: var(--nk-primary-700); }
+    .bk-portal-strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 12px 14px; border-radius: var(--nk-radius-sm); background: var(--nk-primary-50); border: 1px solid var(--nk-primary-100); }
+    .bk-portal-strip .stat-inline .v { color: var(--nk-primary-700); }
+    .bk-action { display: flex; gap: 14px; align-items: center; padding: 14px 16px; }
+    .bk-action .grow strong { display: block; color: var(--nk-text); }
+    .bk-action .grow span { font-size: .85rem; color: var(--nk-text-2); }
+    .bk-action .bk-arrow { color: var(--nk-muted); }
+    .bk-action:hover .bk-arrow { color: var(--nk-primary); }
+    .bk-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; counter-reset: bkstep; }
+    .bk-steps li { display: flex; gap: 12px; align-items: flex-start; font-size: .9rem; color: var(--nk-text-2); counter-increment: bkstep; }
+    .bk-steps li::before { content: counter(bkstep); flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--nk-saffron-50); color: var(--nk-saffron-600); border: 1px solid var(--nk-saffron); font-weight: 700; font-size: .8rem; }
+    .bk-legend { display: grid; gap: 8px; }
+    .bk-legend .row { font-size: .88rem; }
+    .bk-swatch { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex: none; }
+    .bk-mat-item { display: flex; align-items: center; gap: 10px; padding: 10px 16px; }
+    .bk-mat-item .li-main { min-width: 0; flex: 1; }
+    .bk-mat-item .li-title { font-weight: 600; font-size: .9rem; }
+    .bk-mat-item .li-sub { font-size: .8rem; color: var(--nk-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    @media (max-width: 640px) {
+      .bk-portal-strip { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+    }
+    @media (max-width: 900px) { #requests table { min-width: 820px; } }
+  </style>
+</head>
+<body data-page="bank-dashboard">
+  <header id="nk-header"></header>
+  <div id="nk-pagehead"></div>
+  <main id="main" class="nk-main">
+    <div class="nk-container">
+      <div id="sim-note" class="alert saffron bk-sim" role="note"></div>
+      <div id="state"></div>
+      <div id="dash" class="stack lg" hidden>
+        <section class="grid g-4" id="kpis" aria-label="Key figures"></section>
+
+        <section class="grid g-3-2">
+          <div class="card accent-top" id="identity"></div>
+          <div class="stack">
+            <div class="card">
+              <div class="card-head"><h3><span data-icon="zap"></span><span data-i18n="bdash.quick">Quick actions</span></h3></div>
+              <div class="list-divided" id="actions"></div>
+            </div>
+            <div class="card">
+              <div class="card-head"><h3><span data-icon="shield-check"></span><span data-i18n="bdash.how">How a signed receipt protects AICTE</span></h3></div>
+              <div class="card-body"><ol class="bk-steps" id="how"></ol></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="grid g-2-1">
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3><span data-icon="history"></span><span data-i18n="bdash.requests">Recent verification requests from AICTE</span></h3>
+                <div class="sub" data-i18n="bdash.requests_sub">Each time an officer or the nightly re-check asks your bank to confirm a deposit</div>
+              </div>
+              <button class="btn sm secondary" id="all-requests" type="button" hidden></button>
+            </div>
+            <div class="card-body flush" id="requests"></div>
+          </div>
+          <div class="stack">
+            <div class="card">
+              <div class="card-head"><h3><span data-icon="pie"></span><span data-i18n="bdash.ledger">Ledger at a glance</span></h3></div>
+              <div class="card-body">
+                <div class="chart-box sm"><canvas id="status-chart" role="img" aria-label="Deposits by status"></canvas></div>
+                <div class="bk-legend mt-2" id="status-legend"></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-head">
+                <h3><span data-icon="calendar"></span><span data-i18n="bdash.maturing">Maturing in the next 90 days</span></h3>
+              </div>
+              <div class="list-divided" id="maturing"></div>
+              <div class="card-foot row end"><a class="btn sm ghost" id="ledger-link" href="deposits.html"><span data-i18n="bdash.open_ledger">Open deposit ledger</span></a></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div id="nk-footer"></div>
+  <script type="module" src="dashboard.js"></script>
+</body>
+</html>

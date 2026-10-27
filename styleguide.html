@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Style guide · Nidhi Kavach</title>
+  <link rel="stylesheet" href="assets/css/theme.css">
+  <script src="assets/js/config.js"></script>
+  <script src="assets/vendor/chart.umd.min.js"></script>
+  <meta name="robots" content="noindex">
+</head>
+<body data-page="styleguide">
+  <header id="nk-header"></header>
+  <div id="nk-pagehead"></div>
+  <main id="main" class="nk-main">
+    <div class="nk-container stack lg">
+
+      <section class="section">
+        <div class="section-title"><h2>KPI tiles</h2><span class="muted small">.kpi .c-success|c-warning|c-danger|c-teal|c-slate|c-info|c-saffron|c-violet</span></div>
+        <div class="grid g-6" id="kpis"></div>
+      </section>
+
+      <section class="grid g-2-1">
+        <div class="hero-figure danger">
+          <div class="hf-label">Protection gap right now</div>
+          <div class="hf-value">₹14.20 Cr</div>
+          <div class="hf-sub">23 instruments do not protect AICTE today · matured 8 · bank issues 5 · unverified 10</div>
+        </div>
+        <div class="card accent-top">
+          <div class="card-head"><h3><span data-icon="shield-check"></span> Trust ladder</h3><span class="sub">.trust-ladder</span></div>
+          <div class="card-body">
+            <div class="trust-ladder">
+              <div class="rung on l0"><div class="r-title">0 · Claimed</div>Institution typed it</div>
+              <div class="rung on l1"><div class="r-title">1 · Document matched</div>Receipt = form</div>
+              <div class="rung on l2 current"><div class="r-title">2 · Bank verified</div>Bank confirmed</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><h3>Badges</h3><span class="sub">statusBadge · trustBadge · riskBadge · severityBadge · releaseBadge · lienBadge · maturityChip</span></div>
+        <div class="card-body stack" id="badges"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><h3>Buttons</h3></div>
+        <div class="card-body row">
+          <button class="btn">Primary</button>
+          <button class="btn secondary">Secondary</button>
+          <button class="btn ghost">Ghost</button>
+          <button class="btn success">Accept</button>
+          <button class="btn danger">Reject</button>
+          <button class="btn warning">Return</button>
+          <button class="btn saffron">Saffron</button>
+          <button class="btn outline-danger">Outline danger</button>
+          <button class="btn sm">Small</button>
+          <button class="btn lg">Large</button>
+          <button class="btn" disabled>Disabled</button>
+        </div>
+      </section>
+
+      <section class="grid g-2">
+        <div class="card">
+          <div class="card-head"><h3>Form</h3></div>
+          <div class="card-body">
+            <div class="form-grid">
+              <div class="field"><label>FDR number <span class="req">*</span></label><input class="input" value="BSB24FD004512"></div>
+              <div class="field"><label>Bank</label><select class="select"><option>Bharat Sahakari Bank</option></select></div>
+              <div class="field"><label>Amount (₹)</label><input class="input autofilled" value="50,00,000"><span class="hint">Auto-filled from the receipt</span></div>
+              <div class="field"><label>Maturity date</label><input class="input invalid" type="date"><span class="error">Maturity must be after issue date</span></div>
+              <div class="field full"><label>Notes</label><textarea class="textarea" placeholder="Optional"></textarea></div>
+              <label class="check full"><input type="checkbox" checked> Lien marked in favour of AICTE</label>
+            </div>
+          </div>
+          <div class="card-foot row end"><button class="btn secondary">Cancel</button><button class="btn">Submit</button></div>
+        </div>
+        <div class="stack">
+          <div class="smart-search"><span class="ss-icon" data-icon="sparkles"></span><input placeholder='Try "expiring in 60 days in Tamil Nadu above 50 lakh"'><button class="btn sm">Search</button></div>
+          <div class="chips"><span class="chip">State: Tamil Nadu <button aria-label="remove">✕</button></span><span class="chip">Amount ≥ ₹50 L</span><span class="chip">Matures within 60 days</span></div>
+          <div class="alert info"><span data-icon="info"></span><div><div class="a-title">Info</div>Bank verification runs nightly.</div></div>
+          <div class="alert success"><span data-icon="check-circle"></span><div>Signature valid — signed by Bharat Sahakari Bank (BSB-K1).</div></div>
+          <div class="alert warning"><span data-icon="alert"></span><div>Matures in 23 days. Renewal not yet submitted.</div></div>
+          <div class="alert danger"><span data-icon="alert-circle"></span><div><div class="a-title">Forged receipt suspected</div>Printed amount ₹50,00,000 differs from bank-signed QR ₹5,00,000.</div></div>
+          <div class="dropzone"><div class="dz-icon" data-icon="upload"></div><div><strong>Drop the FDR receipt here</strong> or click to browse</div><div class="muted small">PDF, PNG or JPG · up to 10 MB</div></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><h3>Table</h3><span class="sub">renderTable()</span></div>
+        <div class="card-body flush" id="table"></div>
+        <div id="pager"></div>
+      </section>
+
+      <section class="grid g-3">
+        <div class="card"><div class="card-head"><h3>Doughnut</h3></div><div class="card-body"><div class="chart-box sm"><canvas id="c1"></canvas></div></div></div>
+        <div class="card"><div class="card-head"><h3>Bar</h3></div><div class="card-body"><div class="chart-box sm"><canvas id="c2"></canvas></div></div></div>
+        <div class="card"><div class="card-head"><h3>Timeline</h3></div><div class="card-body" id="tl"></div></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><h3>Maturity heatmap</h3><span class="sub">heatmap()</span></div>
+        <div class="card-body" id="hm"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><h3>Stepper, tabs, meter, compare table</h3></div>
+        <div class="card-body stack lg">
+          <div id="stepper"></div>
+          <div id="tabs"></div>
+          <div><div class="row between small"><span>Coverage ₹40 L of ₹50 L</span><strong>80%</strong></div><div class="meter warning lg"><span style="width:80%"></span></div></div>
+          <div class="table-wrap"><table class="table compare-table compact">
+            <thead><tr><th>Field</th><th>Claimed</th><th>Receipt</th><th>Signed QR</th><th>Bank</th></tr></thead>
+            <tbody>
+              <tr><td>Amount</td><td>₹50,00,000</td><td>₹50,00,000</td><td class="bad">₹5,00,000</td><td class="bad">₹5,00,000</td></tr>
+              <tr><td>Maturity date</td><td>01 Jan 2029</td><td class="ok">✓ 01 Jan 2029</td><td class="ok">✓</td><td class="ok">✓</td></tr>
+              <tr><td>Lien</td><td>Yes</td><td class="na">—</td><td class="ok">✓ AICTE</td><td class="na">not checked</td></tr>
+            </tbody></table></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><h3>Lists & verify result</h3></div>
+        <div class="card-body grid g-2">
+          <div class="list-divided" style="border:1px solid var(--nk-border);border-radius:10px">
+            <div class="list-item unread"><div class="li-icon danger" data-icon="alert-circle"></div><div class="li-main"><div class="li-title">FDR NK-FDR-2026-00031 matured 20 days ago</div><div class="li-sub">Escalated to Competent Authority · 2 h ago</div></div></div>
+            <div class="list-item"><div class="li-icon warning" data-icon="clock"></div><div class="li-main"><div class="li-title">Release NK-REL-2026-00004 exceeded scrutiny SLA</div><div class="li-sub">Yesterday</div></div></div>
+          </div>
+          <div class="verify-result valid"><div class="vr-head"><div class="vr-icon" data-icon="shield-check"></div><div><h3 class="mb-0">Genuine receipt</h3><div class="text-2">Digitally signed by Bharat Sahakari Bank · key BSB-K1</div></div></div></div>
+        </div>
+      </section>
+    </div>
+  </main>
+  <div id="nk-footer"></div>
+  <script type="module">
+    import { initPage } from './assets/js/layout.js';
+    import { $, $$, el, icon, kpi, statusBadge, trustBadge, riskBadge, severityBadge, releaseBadge, lienBadge, maturityChip, renderTable, pagination, timeline, stepper, tabs, fmtINR, fmtINRShort, fmtDate } from './assets/js/ui.js';
+    import { doughnutChart, barChart, heatmap, CATEGORY_COLORS, TRUST_COLORS } from './assets/js/charts.js';
+    await initPage({ title: { en: 'Design system', hi: 'डिज़ाइन प्रणाली' }, subtitle: 'Every component available to pages (theme.css + ui.js + charts.js)', breadcrumbs: [{ label: 'nav.home', href: 'index.html' }, { label: 'Style guide' }], actions: el('button', { class: 'btn', html: `${icon('download', 16)} Export` }) });
+    $$('[data-icon]').forEach((n) => { n.innerHTML = icon(n.dataset.icon, n.classList.contains('dz-icon') ? 24 : 18); });
+    const k = $('#kpis');
+    [['Active', '118', 'success', 'shield-check'], ['Expiring ≤90d', '15', 'warning', 'clock'], ['Matured', '8', 'danger', 'alert'], ['Renewed', '21', 'teal', 'refresh'], ['Released', '10', 'slate', 'unlock'], ['Pending', '14', 'info', 'hourglass']]
+      .forEach(([l, v, c, i]) => k.appendChild(kpi({ label: l, value: v, color: c, iconName: i, sub: c === 'warning' ? fmtINRShort(32500000) : '' })));
+    $('#badges').append(
+      el('div', { class: 'row', html: ['submitted', 'under_verification', 'discrepancy', 'active', 'expiring', 'matured', 'renewed', 'release_requested', 'released', 'rejected', 'invoked'].map(statusBadge).join(' ') }),
+      el('div', { class: 'row', html: [trustBadge(0), trustBadge(1), trustBadge(2), trustBadge(2, true), riskBadge(12), riskBadge(45), riskBadge(67), riskBadge(91)].join(' ') }),
+      el('div', { class: 'row', html: [severityBadge('low'), severityBadge('medium'), severityBadge('high'), severityBadge('critical'), ...['SUBMITTED', 'SCRUTINY', 'RECOMMENDED', 'APPROVED', 'RELEASED', 'RETURNED', 'REJECTED'].map(releaseBadge)].join(' ') }),
+      el('div', { class: 'row', html: [lienBadge(true), lienBadge(false), lienBadge(null, true), maturityChip(120), maturityChip(60), maturityChip(12), maturityChip(-9)].join(' ') }));
+    const rows = [
+      { ref: 'NK-FDR-2026-00012', inst: 'Kaveri Institute of Engineering & Technology', state: 'Tamil Nadu', bank: 'Bharat Sahakari Bank', amount: 5000000, mat: '2026-12-06', days: 40, st: 'expiring', trust: 2, risk: 23 },
+      { ref: 'NK-FDR-2026-00031', inst: 'Narmada College of Pharmacy', state: 'Madhya Pradesh', bank: 'Deccan National Bank', amount: 2500000, mat: '2026-10-07', days: -20, st: 'matured', trust: 2, risk: 68 },
+      { ref: 'NK-FDR-2026-00044', inst: 'Sahyadri School of Management', state: 'Maharashtra', bank: 'Indus Capital Bank', amount: 5000000, mat: '2030-03-01', days: 1220, st: 'discrepancy', trust: 0, risk: 95, flag: true },
+    ];
+    renderTable($('#table'), {
+      columns: [
+        { key: 'ref', label: 'Reference', render: (r) => `<div class="cell-main mono">${r.ref}</div><div class="cell-sub">${r.bank}</div>` },
+        { key: 'inst', label: 'Institution', render: (r) => `<div class="cell-main">${r.inst}</div><div class="cell-sub">${r.state}</div>` },
+        { key: 'amount', label: 'Amount', align: 'right', render: (r) => fmtINR(r.amount) },
+        { key: 'mat', label: 'Maturity', render: (r) => `${fmtDate(r.mat)}<div>${maturityChip(r.days)}</div>` },
+        { key: 'st', label: 'Status', render: (r) => statusBadge(r.st) },
+        { key: 'trust', label: 'Trust', render: (r) => trustBadge(r.trust, r.flag) },
+        { key: 'risk', label: 'Risk', align: 'center', render: (r) => riskBadge(r.risk) },
+      ], rows, onRowClick: () => {}, rowClass: (r) => r.risk >= 80 ? 'row-danger' : r.risk >= 60 ? 'row-warning' : '',
+    });
+    pagination($('#pager'), { page: 1, pageSize: 25, total: 142, onChange: () => {} });
+    doughnutChart($('#c1'), { labels: ['Claimed', 'Document matched', 'Bank verified', 'Flagged'], data: [12, 18, 96, 7], colors: [TRUST_COLORS[0], TRUST_COLORS[1], TRUST_COLORS[2], TRUST_COLORS.flagged], center: { value: '133', label: 'instruments' }, legend: 'bottom' });
+    barChart($('#c2'), { labels: ['Active', 'Expiring', 'Matured', 'Renewed', 'Released', 'Pending'], datasets: [{ label: 'Count', data: [118, 15, 8, 21, 10, 14], colors: ['active', 'expiring', 'matured', 'renewed', 'released', 'pending'].map((c) => CATEGORY_COLORS[c]) }] });
+    timeline($('#tl'), [
+      { title: 'Submitted by institution', meta: '12 Oct 2026, 10:12 AM · Kaveri Registrar', tone: '' },
+      { title: 'Bank verified (signature + API)', meta: '13 Oct 2026, 4:40 PM · Ananya Rao', tone: 'success' },
+      { title: 'Discrepancy raised: lien not marked', meta: '14 Oct 2026', tone: 'danger' },
+    ]);
+    const days = [];
+    for (let i = 0; i < 70; i++) { const d = new Date(Date.UTC(2026, 9, 27 + i * 5)); days.push({ date: d.toISOString().slice(0, 10), count: (i % 7) + (i % 3 === 0 ? 3 : 0), amount: 2500000 * ((i % 5) + 1) }); }
+    heatmap($('#hm'), { days, start: '2026-10-01', months: 12, today: '2026-10-27' });
+    stepper($('#stepper'), [{ label: 'Submitted', state: 'done', meta: '2 d' }, { label: 'Scrutiny', state: 'done', meta: '9 d' }, { label: 'Recommended', state: 'current', meta: 'SLA 1 d left' }, { label: 'Approved' }, { label: 'Released' }]);
+    tabs($('#tabs'), [{ key: 'a', label: 'Overview', icon: 'eye', render: (p) => p.append('Overview panel') }, { key: 'b', label: 'Documents', count: 2, icon: 'file', render: (p) => p.append('Docs') }, { key: 'c', label: 'Discrepancies', count: 1, icon: 'flag', render: (p) => p.append('Disc') }]);
+  </script>
+</body>
+</html>

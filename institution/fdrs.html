@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My FDRs · Nidhi Kavach</title>
+  <meta name="description" content="All fixed deposit receipts your institution has lodged with AICTE">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <script src="../assets/js/config.js"></script>
+  <style>
+    .ifdrs-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .ifdrs-tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--nk-border); }
+    .ifdrs-tools .input-icon { flex: 1 1 260px; max-width: 380px; }
+    .ifdrs-tabs { padding: 0 18px; }
+    .ifdrs-tabs .tabs { margin-bottom: 0; overflow-x: auto; }
+    .ifdrs-tabs .tab-panel { display: none; }
+    .ifdrs-foot { display: flex; flex-wrap: wrap; gap: 8px 18px; justify-content: space-between; padding: 12px 18px; border-top: 1px solid var(--nk-border); font-size: .86rem; color: var(--nk-text-2); }
+    @media (max-width: 900px) { .ifdrs-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  </style>
+</head>
+<body data-page="institution-fdrs">
+  <header id="nk-header"></header>
+  <div id="nk-pagehead"></div>
+  <main id="main" class="nk-main">
+    <div class="nk-container stack lg">
+      <div class="ifdrs-summary" id="summary"></div>
+      <section class="card">
+        <div class="ifdrs-tabs" id="tabs"></div>
+        <div class="ifdrs-tools">
+          <div class="input-icon">
+            <span class="icon" id="search-ic" aria-hidden="true"></span>
+            <label for="q" class="sr-only" data-i18n="ifdrs.search">Search</label>
+            <input id="q" class="input" type="search" data-i18n-placeholder="ifdrs.search" placeholder="Search by reference, FDR number or bank">
+          </div>
+          <span class="muted small" id="hint" data-i18n="ifdrs.hint">Select a row to open the instrument</span>
+        </div>
+        <div id="table"></div>
+        <div class="ifdrs-foot" id="foot"></div>
+      </section>
+    </div>
+  </main>
+  <div id="nk-footer"></div>
+  <script type="module" src="fdrs.js"></script>
+</body>
+</html>

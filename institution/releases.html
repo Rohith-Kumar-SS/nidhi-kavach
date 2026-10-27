@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Release &amp; refund requests · Nidhi Kavach</title>
+  <meta name="description" content="Track and raise release, refund and discharge requests for your institution's security deposits">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <script src="../assets/js/config.js"></script>
+  <style>
+    .irel-grid { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 18px; align-items: start; }
+    .irel-tabs { padding: 0 18px; }
+    .irel-tabs .tabs { margin-bottom: 0; overflow-x: auto; }
+    .irel-tabs .tab-panel { display: none; }
+    .irel-foot { display: flex; flex-wrap: wrap; gap: 8px 18px; justify-content: space-between; padding: 12px 18px; border-top: 1px solid var(--nk-border); font-size: .86rem; color: var(--nk-text-2); }
+    .irel-sla-bad { color: var(--nk-danger); font-weight: 600; }
+    .irel-sla-warn { color: var(--nk-warning); font-weight: 600; }
+    .irel-sla-ok { color: var(--nk-success); font-weight: 600; }
+    @media (max-width: 1000px) { .irel-grid { grid-template-columns: minmax(0, 1fr); } }
+  </style>
+</head>
+<body data-page="institution-releases">
+  <header id="nk-header"></header>
+  <div id="nk-pagehead"></div>
+  <main id="main" class="nk-main">
+    <div class="nk-container stack lg">
+      <div class="irel-grid">
+        <section class="card">
+          <div class="irel-tabs" id="tabs"></div>
+          <div id="table"></div>
+          <div class="irel-foot" id="foot"></div>
+        </section>
+        <section class="card accent-saffron accent-top" id="new-card" aria-labelledby="new-h">
+          <div class="card-head">
+            <h2 id="new-h" data-i18n="irel.new.title">New request</h2>
+          </div>
+          <div class="card-body">
+            <div id="new-state"></div>
+            <form id="form" class="stack" novalidate>
+              <div class="field">
+                <label for="f-fdr"><span data-i18n="irel.new.fdr">Deposit (FDR)</span><span class="req"> *</span></label>
+                <select id="f-fdr" class="select" required></select>
+                <span class="hint" data-i18n="irel.new.fdr_hint">Only active deposits without an open request are listed.</span>
+                <div class="error" id="e-fdr" hidden></div>
+              </div>
+              <div class="field">
+                <label for="f-type" data-i18n="irel.new.type">Request type</label>
+                <select id="f-type" class="select"></select>
+                <span class="hint" id="type-hint"></span>
+              </div>
+              <div class="field">
+                <label for="f-reason"><span data-i18n="irel.new.reason">Reason</span><span class="req"> *</span></label>
+                <textarea id="f-reason" class="textarea" rows="5" maxlength="1000" data-i18n-placeholder="irel.new.reason_ph" placeholder="Explain why the deposit should be released"></textarea>
+                <div class="error" id="e-reason" hidden></div>
+              </div>
+              <div class="row">
+                <button class="btn saffron" id="submit" type="submit"><span data-i18n="irel.new.submit">Submit request</span></button>
+              </div>
+            </form>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div id="nk-footer"></div>
+  <script type="module" src="releases.js"></script>
+</body>
+</html>

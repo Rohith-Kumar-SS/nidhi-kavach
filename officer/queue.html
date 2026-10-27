@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Verification queue · Nidhi Kavach</title>
+  <meta name="description" content="Risk-ranked verification queue for AICTE officers: the riskiest instruments first, with readable reasons">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <script src="../assets/js/config.js"></script>
+  <style>
+    /* page layout only - colours come from theme tokens */
+    .q-kpis { margin-bottom: 18px; }
+    .q-toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 12px 18px; border-bottom: 1px solid var(--nk-border); background: var(--nk-surface-2); }
+    .q-toolbar .input-icon { flex: 1 1 260px; min-width: 0; }
+    .q-toolbar .select { width: auto; min-width: 190px; }
+    .q-toolbar .q-busy { width: 18px; height: 18px; border-width: 2px; }
+    .q-tabs-wrap { padding: 0 18px; }
+    .q-tabs-wrap .tab-panel { padding: 0; }
+    .q-list { display: flex; flex-direction: column; gap: 12px; padding: 16px 18px 18px; }
+    .q-item { display: grid; grid-template-columns: 78px minmax(0, 1fr) auto; gap: 16px; padding: 16px 18px; border-left: 4px solid var(--nk-border-strong); align-items: start; transition: box-shadow .15s, border-color .15s; }
+    .q-item:hover { box-shadow: var(--nk-shadow-2); }
+    .q-item.band-critical { border-left-color: var(--nk-danger); }
+    .q-item.band-high { border-left-color: var(--nk-orange); }
+    .q-item.band-medium { border-left-color: var(--nk-warning-bd); }
+    .q-item.band-low { border-left-color: var(--nk-success); }
+    .q-score { width: 78px; border-radius: var(--nk-radius); border: 1px solid; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 4px 8px; text-align: center; }
+    .q-score .q-num { font-size: 1.75rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+    .q-score .q-band { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin-top: 5px; }
+    .q-score .q-of { font-size: .66rem; opacity: .8; margin-top: 1px; }
+    .q-top { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
+    .q-ref { font-weight: 700; font-size: 1rem; color: var(--nk-primary-700); }
+    .q-inst { margin-top: 5px; color: var(--nk-text-2); font-size: .9rem; }
+    .q-inst strong { color: var(--nk-text); font-weight: 600; }
+    .q-reasons { list-style: none; margin: 10px 0 0; padding: 10px 12px; background: var(--nk-surface-2); border: 1px solid var(--nk-border); border-radius: var(--nk-radius-sm); display: grid; gap: 6px; }
+    .q-reasons li { display: flex; gap: 10px; align-items: baseline; font-size: .86rem; color: var(--nk-text-2); }
+    .q-pts { flex: none; min-width: 40px; text-align: center; font-family: var(--nk-mono); font-weight: 700; font-size: .78rem; border-radius: 5px; padding: 1px 6px; background: var(--nk-slate-50); color: var(--nk-slate); border: 1px solid var(--nk-border); }
+    .q-pts.p-hi { background: var(--nk-danger-50); color: var(--nk-danger); border-color: var(--nk-danger-50); }
+    .q-pts.p-mid { background: var(--nk-warning-50); color: var(--nk-warning); border-color: var(--nk-warning-bd); }
+    .q-meta { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 10px; font-size: .82rem; color: var(--nk-muted); }
+    .q-meta span { display: inline-flex; align-items: center; gap: 5px; }
+    .q-meta .me { color: var(--nk-primary); font-weight: 600; }
+    .q-side { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; min-width: 170px; }
+    .q-amount { font-size: 1.25rem; font-weight: 800; color: var(--nk-text); font-variant-numeric: tabular-nums; }
+    .q-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; justify-content: flex-end; }
+    .why-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; font-size: .85rem; }
+    .why-list li { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; color: var(--nk-text-2); }
+    .why-list li .q-pts { min-width: 46px; }
+    .band-row { display: grid; grid-template-columns: 70px minmax(0, 1fr) 34px; gap: 10px; align-items: center; font-size: .85rem; }
+    .band-row .meter > span { min-width: 4px; }
+    .bands-legend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .bands-legend > div { display: flex; gap: 8px; align-items: center; font-size: .82rem; color: var(--nk-text-2); }
+    .ladder-v { display: grid; gap: 8px; }
+    .ladder-v .rung { display: flex; gap: 10px; align-items: flex-start; }
+    .ladder-v .rung .r-desc { font-size: .82rem; color: var(--nk-muted); }
+    .q-empty-celebrate .e-icon { background: var(--nk-success-50); color: var(--nk-success); }
+    @media (max-width: 760px) {
+      .q-item { grid-template-columns: 62px minmax(0, 1fr); gap: 12px; padding: 14px; }
+      .q-score { width: 62px; padding: 8px 2px 6px; }
+      .q-score .q-num { font-size: 1.4rem; }
+      .q-side { grid-column: 1 / -1; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; min-width: 0; border-top: 1px dashed var(--nk-border); padding-top: 10px; }
+      .q-side .q-actions { margin-top: 0; }
+      .q-toolbar .select { flex: 1 1 160px; min-width: 0; }
+      .q-list { padding: 12px; }
+      .q-tabs-wrap { padding: 0 8px; }
+      .q-toolbar { padding: 12px; }
+    }
+  </style>
+</head>
+<body data-page="officer-queue">
+  <header id="nk-header"></header>
+  <div id="nk-pagehead"></div>
+  <main id="main" class="nk-main">
+    <div class="nk-container">
+      <div class="grid g-5 q-kpis" id="kpis" aria-live="polite"></div>
+
+      <div class="grid g-2-1">
+        <section class="card" aria-labelledby="q-list-title">
+          <div class="card-head">
+            <h2 id="q-list-title"><span id="q-title-icon"></span><span data-i18n="queue.list_title">Instruments needing action</span></h2>
+            <span class="sub" id="q-summary"></span>
+          </div>
+          <div class="q-toolbar">
+            <div class="input-icon">
+              <span id="q-search-icon"></span>
+              <label class="sr-only" for="q-search" data-i18n="queue.search_label">Search the queue</label>
+              <input id="q-search" class="input" type="search" autocomplete="off" data-i18n-placeholder="queue.search_ph" placeholder="Search by reference, FDR number, institution or AICTE ID">
+            </div>
+            <label class="sr-only" for="q-sort" data-i18n="queue.sort_label">Sort</label>
+            <select id="q-sort" class="select">
+              <option value="risk" data-i18n="queue.sort.risk">Highest risk first</option>
+              <option value="waiting" data-i18n="queue.sort.waiting">Longest waiting first</option>
+              <option value="maturity" data-i18n="queue.sort.maturity">Earliest maturity first</option>
+            </select>
+            <label class="check"><input type="checkbox" id="q-mine"> <span data-i18n="queue.only_mine">Only mine</span></label>
+            <span class="spinner q-busy" id="q-busy" hidden></span>
+          </div>
+          <div class="q-tabs-wrap" id="q-tabs"></div>
+          <div id="q-list" class="q-list" aria-live="polite"></div>
+        </section>
+
+        <aside class="stack lg" aria-label="Help">
+          <section class="card accent-saffron">
+            <div class="card-head"><h3><span id="why-icon"></span><span data-i18n="queue.why_title">Why this order?</span></h3></div>
+            <div class="card-body stack">
+              <p class="mb-0 text-2 small" data-i18n="queue.why_intro">Every instrument gets a risk score from 0 to 100. The score is simply the sum of points for reasons an officer can read on the card - nothing is hidden. The queue shows the highest score first; ties go to the instrument that has waited longest.</p>
+              <div>
+                <div class="label mb-1" data-i18n="queue.bands_title">Risk bands</div>
+                <div class="bands-legend" id="bands-legend"></div>
+              </div>
+              <div>
+                <div class="label mb-1" data-i18n="queue.points_title">Where the points come from</div>
+                <ul class="why-list" id="why-list"></ul>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-head"><h3><span id="mix-icon"></span><span data-i18n="queue.mix_title">Queue by risk band</span></h3></div>
+            <div class="card-body stack sm" id="mix"></div>
+          </section>
+
+          <section class="card accent-green">
+            <div class="card-head"><h3><span id="ladder-icon"></span><span data-i18n="queue.ladder_title">Trust ladder</span></h3></div>
+            <div class="card-body stack">
+              <div class="ladder-v" id="ladder"></div>
+              <div class="alert danger small" style="padding:9px 11px">
+                <span id="flag-icon"></span>
+                <div data-i18n="queue.ladder_flag">A red "Flagged" badge sits on top of any level while a high or critical discrepancy is open.</div>
+              </div>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </div>
+  </main>
+  <div id="nk-footer"></div>
+  <script type="module" src="queue.js"></script>
+</body>
+</html>

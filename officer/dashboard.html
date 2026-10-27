@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard · Nidhi Kavach</title>
+  <meta name="description" content="Security deposits held by AICTE: protection gap, deposit categories, trust and risk, maturities and action items">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/vendor/chart.umd.min.js"></script>
+  <style>
+    /* page layout only - colours come from theme tokens */
+    .db-top { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 18px; align-items: stretch; }
+    .db-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .db-kpis .kpi { justify-content: flex-start; }
+    .db-kpis .k-sub .meter { margin-top: 8px; height: 7px; }
+    .db-kpis .k-unit { font-size: .95rem; font-weight: 600; color: var(--nk-text-2); margin-left: 3px; }
+    a.kpi, a.kpi:hover { color: inherit; text-decoration: none; }
+    a.kpi .k-go { margin-top: auto; padding-top: 6px; font-size: .78rem; font-weight: 600; color: var(--nk-link); display: inline-flex; align-items: center; gap: 4px; }
+    a.kpi:hover .k-go { text-decoration: underline; }
+
+    .db-gap { display: flex; flex-direction: column; gap: 6px; }
+    .db-gap .hf-label { display: flex; align-items: center; gap: 8px; position: relative; z-index: 1; }
+    .db-gap .hf-value, .db-gap .hf-sub { position: relative; z-index: 1; }
+    .db-gap .hf-value { font-size: 2.6rem; }
+    .db-held { position: relative; z-index: 1; margin-top: 6px; font-size: .86rem; }
+    .db-held .row { justify-content: space-between; gap: 6px 14px; }
+    .db-held .bar { height: 8px; border-radius: 999px; background: color-mix(in srgb, var(--nk-surface) 22%, transparent); overflow: hidden; margin-top: 6px; }
+    .db-held .bar > span { display: block; height: 100%; border-radius: 999px; background: var(--nk-surface); }
+    .db-chips { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+    .db-chip { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: var(--nk-radius); color: var(--nk-surface);
+      background: color-mix(in srgb, var(--nk-surface) 13%, transparent); border: 1px solid color-mix(in srgb, var(--nk-surface) 28%, transparent);
+      transition: background .15s, border-color .15s; min-width: 0; }
+    .db-chip:hover { background: color-mix(in srgb, var(--nk-surface) 22%, transparent); border-color: color-mix(in srgb, var(--nk-surface) 55%, transparent); text-decoration: none; color: var(--nk-surface); }
+    .db-chip .c-label { font-size: .78rem; font-weight: 600; opacity: .92; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+    .db-chip .c-amt { font-size: 1.15rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .db-chip .c-count { font-size: .76rem; opacity: .85; }
+    .db-chip.zero { opacity: .6; }
+
+    .db-tiles .kpi .k-value { font-size: 1.85rem; }
+    .db-tiles .kpi .k-sub { font-weight: 600; color: var(--nk-text); }
+
+    .db-note { display: flex; align-items: center; gap: 8px; font-size: .86rem; color: var(--nk-text-2); }
+    .db-note a { font-weight: 600; }
+    .db-legend { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+    .db-legend .lg-item { border: 1px solid var(--nk-border); border-radius: var(--nk-radius-sm); padding: 6px 8px; font-size: .78rem; color: var(--nk-text-2); min-width: 0; }
+    .db-legend .lg-item b { display: block; font-size: 1.05rem; color: var(--nk-text); font-variant-numeric: tabular-nums; }
+    .db-legend .sw { display: inline-block; width: 9px; height: 9px; border-radius: 3px; margin-right: 5px; vertical-align: 0; }
+    .sw-0 { background: var(--nk-border-strong); } .sw-1 { background: var(--nk-info); } .sw-2 { background: var(--nk-success); }
+
+    .db-actions .list-item { padding: 11px 16px; }
+    .db-actions .li-title { font-size: .88rem; line-height: 1.35; word-break: break-word; }
+    .db-actions .li-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 4px; font-size: .76rem; color: var(--nk-muted); }
+    .db-actions a.list-item { color: inherit; }
+    .db-actions a.list-item:hover { background: var(--nk-surface-2); text-decoration: none; }
+    .db-actions a.list-item:hover .li-title { color: var(--nk-primary); }
+    .db-actions .li-go { color: var(--nk-muted); align-self: center; }
+
+    .db-cal-foot { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 18px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--nk-border); }
+    .db-cal-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+    .db-cal-stats .cs { background: var(--nk-surface-2); border: 1px solid var(--nk-border); border-radius: var(--nk-radius-sm); padding: 10px 12px; color: inherit; display: block; }
+    .db-cal-stats a.cs:hover { border-color: var(--nk-primary); text-decoration: none; }
+    .db-cal-stats .cs .v { font-size: 1.25rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .db-cal-stats .cs .l { font-size: .78rem; color: var(--nk-muted); font-weight: 600; }
+    .heatmap .hm-cell[data-count]:focus-visible { outline: 2px solid var(--nk-primary); outline-offset: 1px; box-shadow: none; }
+
+    .db-bank-name { font-weight: 600; }
+    .db-meter-cell { display: flex; align-items: center; gap: 8px; min-width: 120px; }
+    .db-meter-cell .meter { flex: 1; height: 8px; }
+    .db-meter-cell .num { font-size: .82rem; font-weight: 600; min-width: 42px; text-align: right; }
+
+    .db-impact { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .db-imp { border: 1px solid var(--nk-border); border-radius: var(--nk-radius); padding: 14px 16px; background: var(--nk-surface-2); min-width: 0; }
+    .db-imp .i-pct { font-size: 1.9rem; font-weight: 800; color: var(--nk-success); line-height: 1.1; font-variant-numeric: tabular-nums; }
+    .db-imp .i-label { font-weight: 700; margin-top: 2px; }
+    .db-imp .i-ba { margin-top: 6px; font-size: .86rem; color: var(--nk-text-2); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .db-imp .i-ba s { color: var(--nk-muted); }
+
+    .db-row3 { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+    .db-row3 > .stack { gap: 18px; }
+    .db-top-ref { font-weight: 600; white-space: nowrap; }
+    .db-top-inst { max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .db-top-disc { color: var(--nk-orange); font-weight: 600; display: flex; align-items: center; gap: 4px; }
+    .db-top-badges { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+
+    .sk-line { height: 14px; margin-bottom: 10px; }
+    .sk-block { border-radius: var(--nk-radius); }
+
+    @media (max-width: 1100px) {
+      .db-top { grid-template-columns: minmax(0, 1fr); }
+      .db-row3 { grid-template-columns: minmax(0, 1fr); }
+    }
+    @media (max-width: 900px) {
+      .db-cal-foot { grid-template-columns: minmax(0, 1fr); }
+      .db-impact { grid-template-columns: minmax(0, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .section-title { flex-direction: column; align-items: flex-start; gap: 4px; }
+      .db-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      .db-chips { grid-template-columns: minmax(0, 1fr); }
+      .db-gap .hf-value { font-size: 2.1rem; }
+      .db-tiles .kpi .k-value { font-size: 1.45rem; }
+      .db-legend { grid-template-columns: minmax(0, 1fr); }
+    }
+  </style>
+</head>
+<body data-page="officer-dashboard">
+  <header id="nk-header"></header>
+  <div id="nk-pagehead"></div>
+  <main id="main" class="nk-main">
+    <div class="nk-container stack lg">
+
+      <!-- (1) protection gap + key indicators -->
+      <section class="db-top" aria-labelledby="db-gap-h">
+        <h2 id="db-gap-h" class="sr-only" data-i18n="db.sec_overview">Overview</h2>
+        <div id="gap"></div>
+        <div id="kpis" class="db-kpis"></div>
+      </section>
+
+      <!-- (2) problem-statement buckets -->
+      <section aria-labelledby="db-buckets-h">
+        <div class="section-title">
+          <h2 id="db-buckets-h" data-i18n="db.sec_buckets">Deposits by category</h2>
+          <span class="muted small" data-i18n="db.sec_buckets_hint">Select a category to open the matching instruments in the FDR registry</span>
+        </div>
+        <div id="tiles" class="grid g-6 db-tiles"></div>
+      </section>
+
+      <!-- (3) trust, risk, action items -->
+      <section class="db-row3">
+        <div class="stack">
+          <div class="grid g-2">
+            <div class="card">
+              <div class="card-head">
+                <h3><span data-icon="shield-check"></span><span data-i18n="db.trust_title">Trust ladder</span></h3>
+                <span class="sub" data-i18n="db.trust_sub">Live instruments by verification level</span>
+              </div>
+              <div class="card-body" id="trust"></div>
+            </div>
+            <div class="card">
+              <div class="card-head">
+                <h3><span data-icon="target"></span><span data-i18n="db.risk_title">Risk distribution</span></h3>
+                <span class="sub" data-i18n="db.risk_sub">Explainable score, 0–100</span>
+              </div>
+              <div class="card-body" id="risk"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h3><span data-icon="alert"></span><span data-i18n="db.top_title">Highest-risk live instruments</span></h3>
+              <a class="small" id="top-all" href="#" data-i18n="db.top_all">All high-risk instruments</a>
+            </div>
+            <div class="card-body flush" id="toprisk"></div>
+          </div>
+        </div>
+        <div class="card db-actions">
+          <div class="card-head">
+            <h3><span data-icon="zap"></span><span data-i18n="db.actions_title">Needs attention</span></h3>
+            <a class="small" id="actions-all" href="#" data-i18n="db.actions_all">Open queue</a>
+          </div>
+          <div id="actions" class="list-divided"></div>
+        </div>
+      </section>
+
+      <!-- (4) maturity calendar -->
+      <section class="card accent-saffron">
+        <div class="card-head">
+          <h3><span data-icon="calendar"></span><span data-i18n="db.cal_title">Maturity calendar · next 12 months</span></h3>
+          <span class="sub" data-i18n="db.cal_sub">Held deposits by maturity date. Select a day to list its deposits.</span>
+        </div>
+        <div class="card-body" id="calendar"></div>
+      </section>
+
+      <!-- (5) by state, by bank -->
+      <section class="grid g-2">
+        <div class="card">
+          <div class="card-head">
+            <h3><span data-icon="map"></span><span data-i18n="db.state_title">Deposits by state</span></h3>
+            <span class="sub" data-i18n="db.state_sub">Top 10 states by amount held, with the protection gap</span>
+          </div>
+          <div class="card-body" id="states"></div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <h3><span data-icon="bank"></span><span data-i18n="db.bank_title">Deposits by bank</span></h3>
+            <span class="sub" data-i18n="db.bank_sub">Held instruments and share confirmed by the bank</span>
+          </div>
+          <div class="card-body flush" id="banks"></div>
+        </div>
+      </section>
+
+      <!-- (6) impact teaser -->
+      <section class="card accent-green">
+        <div class="card-head">
+          <h3><span data-icon="trend"></span><span data-i18n="db.impact_title">Measured improvement over the manual process</span></h3>
+          <a class="btn sm secondary" id="impact-link" href="#"><span data-i18n="db.impact_more">Full analytics</span><span data-icon="arrow-right"></span></a>
+        </div>
+        <div class="card-body" id="impact"></div>
+      </section>
+
+    </div>
+  </main>
+  <div id="nk-footer"></div>
+  <script type="module" src="dashboard.js"></script>
+</body>
+</html>

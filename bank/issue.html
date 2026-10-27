@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Issue FDR · Nidhi Kavach</title>
+  <meta name="description" content="Mock bank portal: issue a fixed deposit with lien to AICTE and print a receipt carrying a signed QR">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <script src="../assets/js/config.js"></script>
+  <style>
+    .is-sim { margin-bottom: 18px; }
+    .is-combo { position: relative; }
+    .is-combo .input-icon input.input { padding-left: 36px; } /* theme's input[type=text].input outranks .input-icon .input */
+    .is-suggest { position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 60; background: var(--nk-surface); border: 1px solid var(--nk-border); border-radius: var(--nk-radius-sm); box-shadow: var(--nk-shadow-2); padding: 6px; max-height: 320px; overflow: auto; margin: 0; list-style: none; }
+    .is-suggest li { padding: 9px 10px; border-radius: 6px; cursor: pointer; display: flex; gap: 10px; align-items: flex-start; }
+    .is-suggest li[aria-selected="true"], .is-suggest li:hover { background: var(--nk-primary-50); }
+    .is-suggest li .is-s-name { font-weight: 600; color: var(--nk-text); }
+    .is-suggest li .is-s-sub { font-size: .8rem; color: var(--nk-muted); }
+    .is-suggest .is-s-note { padding: 10px; font-size: .85rem; color: var(--nk-muted); cursor: default; }
+    .is-picked { display: flex; gap: 12px; align-items: center; padding: 12px 14px; border: 1px solid var(--nk-primary-100); background: var(--nk-primary-50); border-radius: var(--nk-radius-sm); }
+    .is-picked .grow { min-width: 0; }
+    .is-picked strong { display: block; color: var(--nk-text); }
+    .is-picked .is-p-sub { font-size: .82rem; color: var(--nk-text-2); }
+    .is-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+    .is-chips .btn { padding: 3px 10px; font-size: .78rem; }
+    .is-amount-hint strong { color: var(--nk-primary-700); }
+    .is-lien { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border: 1px solid var(--nk-border); border-radius: var(--nk-radius-sm); background: var(--nk-surface-2); }
+    .is-lien .check { font-weight: 600; }
+    .is-lien p { margin: 4px 0 0 25px; font-size: .84rem; color: var(--nk-text-2); }
+    .is-summary { display: grid; gap: 10px; }
+    .is-summary .row { font-size: .9rem; }
+    .is-summary .row span:first-child { color: var(--nk-text-2); }
+    .is-summary .is-total { border-top: 1px dashed var(--nk-border-strong); padding-top: 10px; font-size: 1rem; }
+    .is-summary .is-total strong { color: var(--nk-green); font-size: 1.2rem; }
+    .is-qr { display: grid; place-items: center; padding: 12px; background: var(--nk-surface); border: 1px solid var(--nk-border); border-radius: var(--nk-radius-sm); }
+    .is-qr img { width: 100%; max-width: 230px; height: auto; image-rendering: pixelated; }
+    .is-fraud { border: 1px dashed var(--nk-danger); background: var(--nk-danger-50); border-radius: var(--nk-radius); padding: 16px 18px; }
+    .is-fraud h3 { margin: 0 0 6px; display: flex; gap: 8px; align-items: center; color: var(--nk-danger); font-size: 1rem; }
+    .is-fraud p { margin: 0 0 12px; font-size: .88rem; color: var(--nk-text-2); }
+    .is-success-head { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+    .is-success-head .feature-icon { width: 52px; height: 52px; border-radius: 50%; }
+    .is-success-head h2 { margin: 0; font-size: 1.2rem; }
+    .is-fdrno { font-family: var(--nk-mono); font-weight: 700; color: var(--nk-primary-700); letter-spacing: .03em; }
+    .is-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    @media (max-width: 640px) { .is-actions .btn { flex: 1 1 100%; justify-content: center; } }
+  </style>
+</head>
+<body data-page="bank-issue">
+  <header id="nk-header"></header>
+  <div id="nk-pagehead"></div>
+  <main id="main" class="nk-main">
+    <div class="nk-container">
+      <div id="sim-note" class="alert saffron is-sim" role="note"></div>
+      <div id="state"></div>
+
+      <!-- issue form -->
+      <section id="form-view" class="grid g-2-1" hidden>
+        <form class="card accent-top" id="issue-form" novalidate>
+          <div class="card-head">
+            <div>
+              <h3><span data-icon="wallet"></span><span data-i18n="issue.form_title">Deposit details</span></h3>
+              <div class="sub" data-i18n="issue.form_sub">Fields marked * are required. The receipt is signed the moment you issue it.</div>
+            </div>
+          </div>
+          <div class="card-body stack lg">
+            <div id="form-error" hidden></div>
+
+            <div class="field">
+              <label for="inst-q"><span data-i18n="issue.inst">Depositor institution</span> <span class="req">*</span></label>
+              <div id="inst-search" class="is-combo">
+                <div class="input-icon">
+                  <span class="icon" data-icon="search"></span>
+                  <input class="input" id="inst-q" type="text" autocomplete="off" role="combobox" aria-autocomplete="list"
+                    aria-expanded="false" aria-controls="inst-list" aria-describedby="inst-hint"
+                    data-i18n-placeholder="issue.inst_ph" placeholder="Type an AICTE ID or institution name">
+                </div>
+                <ul class="is-suggest" id="inst-list" role="listbox" hidden></ul>
+              </div>
+              <div id="inst-picked" hidden></div>
+              <span class="hint" id="inst-hint" data-i18n="issue.inst_hint">Search by AICTE ID (e.g. 1-44120987) or part of the name, then pick from the list.</span>
+              <span class="error" id="inst-error" hidden></span>
+            </div>
+
+            <div class="form-grid">
+              <div class="field full">
+                <label for="holder"><span data-i18n="issue.holder">Name of the deposit holder</span></label>
+                <input class="input" id="holder" name="holder_name" type="text" maxlength="160">
+                <span class="hint" data-i18n="issue.holder_hint">Optional. Defaults to the trust or society that runs the institution.</span>
+              </div>
+
+              <div class="field">
+                <label for="amount"><span data-i18n="issue.amount">Deposit amount (₹)</span> <span class="req">*</span></label>
+                <input class="input num" id="amount" type="text" inputmode="numeric" autocomplete="off" aria-describedby="amount-hint" placeholder="50,00,000">
+                <span class="hint is-amount-hint" id="amount-hint"></span>
+                <div class="is-chips" id="amount-chips" role="group" aria-label="Quick amounts"></div>
+                <span class="error" id="amount-error" hidden></span>
+              </div>
+
+              <div class="field">
+                <label for="tenure"><span data-i18n="issue.tenure">Tenure</span> <span class="req">*</span></label>
+                <select class="select" id="tenure"></select>
+                <span class="hint" data-i18n="issue.tenure_hint">AICTE expects the deposit to cover the approval period.</span>
+              </div>
+
+              <div class="field">
+                <label for="rate"><span data-i18n="issue.rate">Interest rate (% per annum)</span></label>
+                <input class="input num" id="rate" type="number" step="0.05" min="0.1" max="15" value="7.1">
+                <span class="error" id="rate-error" hidden></span>
+              </div>
+
+              <div class="field">
+                <label for="issue-date"><span data-i18n="issue.date">Issue date</span></label>
+                <input class="input" id="issue-date" type="date">
+                <span class="hint" id="date-hint"></span>
+                <span class="error" id="date-error" hidden></span>
+              </div>
+
+              <div class="field full">
+                <label for="branch"><span data-i18n="issue.branch">Issuing branch</span></label>
+                <input class="input" id="branch" type="text" maxlength="120" data-i18n-placeholder="issue.branch_ph" placeholder="e.g. Fort, Mumbai">
+                <span class="hint" data-i18n="issue.branch_hint">Optional. An IFSC is generated for the branch.</span>
+              </div>
+            </div>
+
+            <div class="is-lien">
+              <div>
+                <label class="check"><input type="checkbox" id="lien" checked> <span data-i18n="issue.lien">Mark a lien in favour of the Member Secretary, AICTE</span></label>
+                <p data-i18n="issue.lien_text">With a lien the deposit cannot be withdrawn, pledged elsewhere or closed early without AICTE’s consent. Untick only to show how the portal flags a deposit without lien.</p>
+              </div>
+            </div>
+          </div>
+          <div class="card-foot row between">
+            <a class="btn ghost" id="cancel-link" href="dashboard.html"><span data-i18n="common.cancel">Cancel</span></a>
+            <button class="btn lg" id="submit-btn" type="submit"></button>
+          </div>
+        </form>
+
+        <aside class="stack">
+          <div class="card">
+            <div class="card-head"><h3><span data-icon="rupee"></span><span data-i18n="issue.preview">Deposit preview</span></h3></div>
+            <div class="card-body is-summary" id="summary" aria-live="polite"></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3><span data-icon="key"></span><span data-i18n="issue.signing">Signed with your bank key</span></h3></div>
+            <div class="card-body stack" id="key-box"></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3><span data-icon="git-branch"></span><span data-i18n="issue.next">What happens next</span></h3></div>
+            <div class="card-body" id="next-steps"></div>
+          </div>
+        </aside>
+      </section>
+
+      <!-- success -->
+      <section id="done-view" class="stack lg" hidden></section>
+    </div>
+  </main>
+  <div id="nk-footer"></div>
+  <script type="module" src="issue.js"></script>
+</body>
+</html>

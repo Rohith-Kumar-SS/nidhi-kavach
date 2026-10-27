@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Submit an FDR · Nidhi Kavach</title>
+  <meta name="description" content="Upload a fixed deposit receipt; the portal reads it, checks the bank signature and fills the form for you">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <script src="../assets/js/config.js"></script>
+  <style>
+    .isub-layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 22px; align-items: start; }
+    .isub-steps { padding: 18px 20px 6px; }
+    .isub-file { display: flex; gap: 12px; align-items: center; padding: 12px 14px; border: 1px solid var(--nk-border); border-radius: var(--nk-radius-sm); background: var(--nk-surface-2); }
+    .isub-file .grow { min-width: 0; }
+    .isub-file .fname { font-weight: 700; overflow-wrap: anywhere; }
+    .isub-progress { padding: 14px 16px; border: 1px solid var(--nk-border); border-radius: var(--nk-radius-sm); }
+    .isub-progress .row { margin-bottom: 8px; }
+    .isub-found h3 { font-size: 1rem; margin: 0 0 10px; }
+    .isub-demo { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: center; justify-content: space-between; border: 1px dashed var(--nk-border-strong); border-radius: var(--nk-radius); padding: 14px 16px; background: var(--nk-surface-2); }
+    .isub-demo .btns { display: flex; flex-wrap: wrap; gap: 8px; }
+    .isub-sig.verify-result { padding: 16px; }
+    .isub-sig .vr-icon { width: 44px; height: 44px; }
+    .isub-sig.none { border-color: var(--nk-warning-bd); background: var(--nk-warning-50); }
+    .isub-sig.none .vr-icon { background: var(--nk-warning); }
+    .field .hint-box { display: flex; flex-wrap: wrap; gap: 2px 14px; }
+    .field .hint.warn { color: var(--nk-warning); font-weight: 600; }
+    .field .hint.src { color: var(--nk-primary-700); }
+    .isub-lien { background: var(--nk-info-50); border-radius: var(--nk-radius-sm); padding: 12px 14px; }
+    .isub-lien .small { margin: 4px 0 0 25px; }
+    .isub-nav { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; }
+    .isub-declare { border: 1px solid var(--nk-border-strong); border-radius: var(--nk-radius-sm); padding: 14px 16px; background: var(--nk-surface-2); }
+    .isub-declare .check { align-items: flex-start; line-height: 1.5; }
+    .isub-declare .check input { margin-top: 3px; flex: none; }
+    .isub-done { text-align: center; padding: 28px 20px 8px; }
+    .isub-done .big { width: 72px; height: 72px; border-radius: 50%; display: inline-grid; place-items: center; background: var(--nk-success); color: var(--nk-surface); margin-bottom: 12px; }
+    .isub-done .ref { font-family: var(--nk-mono); font-size: 1.35rem; font-weight: 800; color: var(--nk-navy); }
+    .isub-feat { display: flex; gap: 12px; align-items: flex-start; }
+    .isub-feat > div:last-child { flex: 1 1 auto; min-width: 0; }
+    .isub-help ol { margin: 0; padding-left: 20px; }
+    .isub-help li { margin-bottom: 8px; }
+    @media (max-width: 960px) { .isub-layout { grid-template-columns: minmax(0, 1fr); } }
+  </style>
+</head>
+<body data-page="institution-submit">
+  <header id="nk-header"></header>
+  <div id="nk-pagehead"></div>
+  <main id="main" class="nk-main">
+    <div class="nk-container stack lg">
+      <div id="renew-banner"></div>
+      <div class="isub-layout">
+        <section class="card" aria-live="polite">
+          <div class="isub-steps" id="steps"></div>
+          <div class="card-body" id="panel">
+            <div class="loading"><span class="spinner"></span><span data-i18n="common.loading">Loading…</span></div>
+          </div>
+        </section>
+        <aside class="stack lg" id="side"></aside>
+      </div>
+    </div>
+  </main>
+  <div id="nk-footer"></div>
+  <script type="module" src="submit.js"></script>
+</body>
+</html>
